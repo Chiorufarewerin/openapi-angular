@@ -1,8 +1,0 @@
-RemoteObject:
-  type: object
-  properties:
-    ownProperty:
-      type: boolean
-  $defs:
-    remoteDef:
-      type: string

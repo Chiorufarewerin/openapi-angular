@@ -1,5 +1,0 @@
-.turbo
-test
-vitest.config.ts
-tsconfig*.json
-biome.json
