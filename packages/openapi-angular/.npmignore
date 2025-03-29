@@ -1,0 +1,8 @@
+.turbo
+examples
+test
+test-results
+tsconfig*.json
+playwright.config.ts
+vitest.config.ts
+biome.json

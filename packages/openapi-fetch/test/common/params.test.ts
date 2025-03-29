@@ -221,7 +221,11 @@ describe("params", () => {
 
       // (no error)
       const response = await client.GET("/header-params", {
-        params: { header: { "x-required-header": "correct" } },
+        params: {
+          header: { "x-required-header": "test" },
+          query: undefined,
+        },
+        baseUrl,
       });
 
       // expect param passed correctly
