@@ -918,6 +918,244 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
     >
   ): Observable<FetchResponse<Paths[Path]["options"], "application/json">>;
   /**
+   * Constructs a `PATCH` request that interprets the body as an `ArrayBuffer` and returns
+   * the response as an `ArrayBuffer`.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to edit.
+   * @param options HTTP options.
+   *
+   * @return An `Observable` of the response, with the response body as an `ArrayBuffer`.
+   */
+  patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe?: "body";
+        responseType: "arraybuffer";
+      },
+  ): Observable<ArrayBuffer>;
+  /**
+   * Constructs a `PATCH` request that interprets the body as a `Blob` and returns the response
+   * as a `Blob`.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to edit.
+   * @param options HTTP options.
+   *
+   * @return An `Observable` of the response, with the response body as a `Blob`.
+   */
+  patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe?: "body";
+        responseType: "blob";
+      },
+  ): Observable<Blob>;
+  /**
+   * Constructs a `PATCH` request that interprets the body as a text string and
+   * returns the response as a string value.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to edit.
+   * @param options HTTP options.
+   *
+   * @return An `Observable` of the response, with a response body of type string.
+   */
+  patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe?: "body";
+        responseType: "text";
+      },
+  ): Observable<string>;
+  /**
+   * Constructs a `PATCH` request that interprets the body as an `ArrayBuffer` and
+   *  returns the full event stream.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to edit.
+   * @param options HTTP options.
+   *
+   * @return An `Observable` of all the `HttpEvent`s for the request,
+   * with the response body as an `ArrayBuffer`.
+   */
+  patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe: "events";
+        responseType: "arraybuffer";
+      },
+  ): Observable<HttpEvent<ArrayBuffer>>;
+  /**
+   * Constructs a `PATCH` request that interprets the body as a `Blob`
+   *  and returns the full event stream.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to edit.
+   * @param options HTTP options.
+   *
+   * @return An `Observable` of all the `HttpEvent`s for the request, with the
+   * response body as `Blob`.
+   */
+  patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe: "events";
+        responseType: "blob";
+      },
+  ): Observable<HttpEvent<Blob>>;
+  /**
+   * Constructs a `PATCH` request that interprets the body as a text string and
+   * returns the full event stream.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to edit.
+   * @param options HTTP options.
+   *
+   * @return An `Observable` of all the `HttpEvent`s for the request, with a
+   * response body of type string.
+   */
+  patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe: "events";
+        responseType: "text";
+      },
+  ): Observable<HttpEvent<string>>;
+  /**
+   * Constructs a `PATCH` request that interprets the body as JSON
+   * and returns the full event stream.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to edit.
+   * @param options HTTP options.
+   *
+   * @return An `Observable` of all the `HttpEvent`s for the request,
+   * with a response body of type `Object`.
+   */
+  patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe: "events";
+        responseType?: "json";
+      },
+  ): Observable<HttpEvent<FetchResponse<Paths[Path]["patch"], "application/json">>>;
+  /**
+   * Constructs a `PATCH` request that interprets the body as an `ArrayBuffer`
+   *  and returns the full `HttpResponse`.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to edit.
+   * @param options HTTP options.
+   *
+   * @return  An `Observable` of the `HttpResponse` for the request,
+   * with the response body as an `ArrayBuffer`.
+   */
+  patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe: "response";
+        responseType: "arraybuffer";
+      },
+  ): Observable<HttpResponse<ArrayBuffer>>;
+  /**
+   * Constructs a `PATCH` request that interprets the body as a `Blob` and returns the full
+   * `HttpResponse`.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to edit.
+   * @param options HTTP options.
+   *
+   * @return  An `Observable` of the `HttpResponse` for the request,
+   * with the response body as a `Blob`.
+   */
+  patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe: "response";
+        responseType: "blob";
+      },
+  ): Observable<HttpResponse<Blob>>;
+  /**
+   * Constructs a `PATCH` request that interprets the body as a text stream and returns the
+   * full `HttpResponse`.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to edit.
+   * @param options HTTP options.
+   *
+   * @return  An `Observable` of the `HttpResponse` for the request,
+   * with a response body of type string.
+   */
+  patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe: "response";
+        responseType: "text";
+      },
+  ): Observable<HttpResponse<string>>;
+  /**
+   * Constructs a `PATCH` request that interprets the body as JSON
+   * and returns the full `HttpResponse`.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to edit.
+   * @param options HTTP options.
+   *
+   * @return An `Observable` of the `HttpResponse` for the request,
+   * with a response body in the requested type.
+   */
+  patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe: "response";
+        responseType?: "json";
+      },
+  ): Observable<HttpResponse<FetchResponse<Paths[Path]["patch"], "application/json">>>;
+  /**
+   * Constructs a `PATCH` request that interprets the body as JSON and
+   * returns the response body as an object parsed from JSON.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to edit.
+   * @param options HTTP options.
+   *
+   * @return An `Observable` of the response, with the response body as an object parsed from JSON.
+   */
+  patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
+    url: Path,
+    body: PickBody<Init>,
+    ...options: InitParam<
+      Omit<RequestOptions, "transferCache"> &
+        OmitBody<Init> & {
+          observe?: "body";
+          responseType?: "json";
+        }
+    >
+  ): Observable<FetchResponse<Paths[Path]["patch"], "application/json">>;
+  /**
    * Constructs a `POST` request that interprets the body as an `ArrayBuffer` and returns
    * an `ArrayBuffer`.
    *
@@ -1154,8 +1392,248 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
         }
     >
   ): Observable<FetchResponse<Paths[Path]["post"], "application/json">>;
+  /**
+   * Constructs a `PUT` request that interprets the body as an `ArrayBuffer` and returns the
+   * response as an `ArrayBuffer`.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to add/update.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of the response, with the response body as an `ArrayBuffer`.
+   */
+  put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe?: "body";
+        responseType: "arraybuffer";
+      },
+  ): Observable<ArrayBuffer>;
+  /**
+   * Constructs a `PUT` request that interprets the body as a `Blob` and returns
+   * the response as a `Blob`.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to add/update.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of the response, with the response body as a `Blob`.
+   */
+  put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe?: "body";
+        responseType: "blob";
+      },
+  ): Observable<Blob>;
+  /**
+   * Constructs a `PUT` request that interprets the body as a text string and
+   * returns the response as a string value.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to add/update.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of the response, with a response body of type string.
+   */
+  put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe?: "body";
+        responseType: "text";
+      },
+  ): Observable<string>;
+  /**
+   * Constructs a `PUT` request that interprets the body as an `ArrayBuffer` and
+   * returns the full event stream.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to add/update.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of all `HttpEvent`s for the request,
+   * with the response body as an `ArrayBuffer`.
+   */
+  put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe: "events";
+        responseType: "arraybuffer";
+      },
+  ): Observable<HttpEvent<ArrayBuffer>>;
+  /**
+   * Constructs a `PUT` request that interprets the body as a `Blob` and returns the full event
+   * stream.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to add/update.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of all `HttpEvent`s for the request,
+   * with the response body as a `Blob`.
+   */
+  put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe: "events";
+        responseType: "blob";
+      },
+  ): Observable<HttpEvent<Blob>>;
+  /**
+   * Constructs a `PUT` request that interprets the body as a text string and returns the full event
+   * stream.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to add/update.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of all `HttpEvent`s for the request, with a response body
+   * of type string.
+   */
+  put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe: "events";
+        responseType: "text";
+      },
+  ): Observable<HttpEvent<string>>;
+  /**
+   * Constructs a `PUT` request that interprets the body as JSON and returns the full
+   * event stream.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to add/update.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of all `HttpEvent`s for the request, with a response body of
+   * type `Object`.
+   */
+  put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe: "events";
+        responseType?: "json";
+      },
+  ): Observable<HttpEvent<FetchResponse<Paths[Path]["put"], "application/json">>>;
+  /**
+   * Constructs a `PUT` request that interprets the body as an
+   * `ArrayBuffer` and returns an observable of the full HTTP response.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to add/update.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of the `HttpResponse` for the request, with the response body as an
+   * `ArrayBuffer`.
+   */
+  put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe: "response";
+        responseType: "arraybuffer";
+      },
+  ): Observable<HttpResponse<ArrayBuffer>>;
+  /**
+   * Constructs a `PUT` request that interprets the body as a `Blob` and returns the
+   * full HTTP response.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to add/update.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of the `HttpResponse` for the request,
+   * with the response body as a `Blob`.
+   */
+  put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe: "response";
+        responseType: "blob";
+      },
+  ): Observable<HttpResponse<Blob>>;
+  /**
+   * Constructs a `PUT` request that interprets the body as a text stream and returns the
+   * full HTTP response.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to add/update.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of the `HttpResponse` for the request, with a response body of type
+   * string.
+   */
+  put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe: "response";
+        responseType: "text";
+      },
+  ): Observable<HttpResponse<string>>;
+  /**
+   * Constructs a `PUT` request that interprets the body as JSON and returns the full
+   * HTTP response.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to add/update.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of the `HttpResponse` for the request, with a response body
+   * of type 'Object`.
+   */
+  put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
+    url: Path,
+    body: PickBody<Init>,
+    options: Omit<RequestOptions, "transferCache"> &
+      OmitBody<Init> & {
+        observe: "response";
+        responseType?: "json";
+      },
+  ): Observable<HttpResponse<FetchResponse<Paths[Path]["put"], "application/json">>>;
+  /**
+   * Constructs a `PUT` request that interprets the body as JSON
+   * and returns an observable of JavaScript object.
+   *
+   * @param url The endpoint URL.
+   * @param body The resources to add/update.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of the response as a JavaScript object.
+   */
+  put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
+    url: Path,
+    body: PickBody<Init>,
+    ...options: InitParam<
+      Omit<RequestOptions, "transferCache"> &
+        OmitBody<Init> & {
+          observe?: "body";
+          responseType?: "json";
+        }
+    >
+  ): Observable<FetchResponse<Paths[Path]["put"], "application/json">>;
 }
 
 export declare const http: OpenapiHttpClient<paths>;
 
-http.options("", "test").subscribe((v) => {});
+http.patch("/app/hook/config", {}).subscribe((v) => {
+  v;
+});
