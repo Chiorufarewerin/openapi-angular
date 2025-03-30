@@ -1,8 +1,8 @@
-import type { HttpClient, HttpContext, HttpEvent, HttpResponse } from "@angular/common/http";
+import type { HttpClient, HttpContext, HttpEvent, HttpRequest, HttpResponse } from "@angular/common/http";
 import type {
   FilterKeys,
+  HttpMethod,
   IsOperationRequestBodyOptional,
-  MediaType,
   OperationRequestBodyContent,
   PathsWithMethod,
   RequiredKeysOf,
@@ -10,7 +10,6 @@ import type {
   SuccessResponse,
 } from "openapi-typescript-helpers";
 import type { Observable } from "rxjs";
-import type { paths } from "./github.d.ts";
 
 type PickBody<T> = "body" extends keyof T
   ? T["body"]
@@ -19,9 +18,9 @@ type PickBody<T> = "body" extends keyof T
     : null;
 type OmitBody<T> = Omit<T, "body">;
 
-export type FetchResponse<T extends Record<string | number, any>, Media extends MediaType> = SuccessResponse<
+export type JsonResponse<T extends Record<string | number, any>> = SuccessResponse<
   ResponseObjectMap<T>,
-  Media
+  "application/json"
 >;
 
 export type RequestBodyOption<T> = OperationRequestBodyContent<T> extends never
@@ -50,19 +49,308 @@ export type RequestOptions = {
     | boolean;
 };
 
-export type FetchOptions<T> = ParamsOption<T> & RequestBodyOption<T>;
+export type InitOptions<T> = ParamsOption<T> & RequestBodyOption<T>;
 
 export type MaybeOptionalInit<Params, Location extends keyof Params> = RequiredKeysOf<
-  FetchOptions<FilterKeys<Params, Location>>
+  InitOptions<FilterKeys<Params, Location>>
 > extends never
-  ? FetchOptions<FilterKeys<Params, Location>> | undefined
-  : FetchOptions<FilterKeys<Params, Location>>;
+  ? InitOptions<FilterKeys<Params, Location>> | undefined
+  : InitOptions<FilterKeys<Params, Location>>;
 
 type InitParam<Init> = RequiredKeysOf<Init> extends never
   ? [(Init & { [key: string]: unknown })?]
   : [Init & { [key: string]: unknown }];
 
 export interface OpenapiHttpClient<Paths extends Record<string, any>> extends HttpClient {
+  /**
+   * Sends an `HttpRequest` and returns a stream of `HttpEvent`s.
+   *
+   * @return An `Observable` of the response, with the response body as a stream of `HttpEvent`s.
+   */
+  request<R>(req: HttpRequest<any>): Observable<HttpEvent<R>>;
+  /**
+   * Constructs a request that interprets the body as an `ArrayBuffer` and returns the response in
+   * an `ArrayBuffer`.
+   *
+   * @param method  The HTTP method.
+   * @param url     The endpoint URL.
+   * @param options The HTTP options to send with the request.
+   *
+   *
+   * @return An `Observable` of the response, with the response body as an `ArrayBuffer`.
+   */
+  request<
+    Method extends HttpMethod,
+    Path extends PathsWithMethod<Paths, Method>,
+    Init extends MaybeOptionalInit<Paths[Path], Method>,
+  >(
+    method: Method,
+    path: Path,
+    options: RequestOptions &
+      Init & {
+        observe?: "body";
+        responseType: "arraybuffer";
+      },
+  ): Observable<ArrayBuffer>;
+  /**
+   * Constructs a request that interprets the body as a blob and returns
+   * the response as a blob.
+   *
+   * @param method  The HTTP method.
+   * @param url     The endpoint URL.
+   * @param options The HTTP options to send with the request.
+   *
+   * @return An `Observable` of the response, with the response body of type `Blob`.
+   */
+  request<
+    Method extends HttpMethod,
+    Path extends PathsWithMethod<Paths, Method>,
+    Init extends MaybeOptionalInit<Paths[Path], Method>,
+  >(
+    method: Method,
+    path: Path,
+    options: RequestOptions &
+      Init & {
+        observe?: "body";
+        responseType: "blob";
+      },
+  ): Observable<Blob>;
+  /**
+   * Constructs a request that interprets the body as a text string and
+   * returns a string value.
+   *
+   * @param method  The HTTP method.
+   * @param url     The endpoint URL.
+   * @param options The HTTP options to send with the request.
+   *
+   * @return An `Observable` of the response, with the response body of type string.
+   */
+  request<
+    Method extends HttpMethod,
+    Path extends PathsWithMethod<Paths, Method>,
+    Init extends MaybeOptionalInit<Paths[Path], Method>,
+  >(
+    method: Method,
+    path: Path,
+    options: RequestOptions &
+      Init & {
+        observe?: "body";
+        responseType: "text";
+      },
+  ): Observable<string>;
+  /**
+   * Constructs a request that interprets the body as an `ArrayBuffer` and returns the
+   * the full event stream.
+   *
+   * @param method  The HTTP method.
+   * @param url     The endpoint URL.
+   * @param options The HTTP options to send with the request.
+   *
+   * @return An `Observable` of the response, with the response body as an array of `HttpEvent`s for
+   * the request.
+   */
+  request<
+    Method extends HttpMethod,
+    Path extends PathsWithMethod<Paths, Method>,
+    Init extends MaybeOptionalInit<Paths[Path], Method>,
+  >(
+    method: Method,
+    path: Path,
+    options: RequestOptions &
+      Init & {
+        observe: "events";
+        responseType: "arraybuffer";
+      },
+  ): Observable<HttpEvent<ArrayBuffer>>;
+  /**
+   * Constructs a request that interprets the body as a `Blob` and returns
+   * the full event stream.
+   *
+   * @param method  The HTTP method.
+   * @param url     The endpoint URL.
+   * @param options The HTTP options to send with the request.
+   *
+   * @return An `Observable` of all `HttpEvent`s for the request,
+   * with the response body of type `Blob`.
+   */
+  request<
+    Method extends HttpMethod,
+    Path extends PathsWithMethod<Paths, Method>,
+    Init extends MaybeOptionalInit<Paths[Path], Method>,
+  >(
+    method: Method,
+    path: Path,
+    options: RequestOptions &
+      Init & {
+        observe: "events";
+        responseType: "blob";
+      },
+  ): Observable<HttpEvent<Blob>>;
+  /**
+   * Constructs a request which interprets the body as a text string and returns the full event
+   * stream.
+   *
+   * @param method  The HTTP method.
+   * @param url     The endpoint URL.
+   * @param options The HTTP options to send with the request.
+   *
+   * @return An `Observable` of all `HttpEvent`s for the request,
+   * with the response body of type string.
+   */
+  request<
+    Method extends HttpMethod,
+    Path extends PathsWithMethod<Paths, Method>,
+    Init extends MaybeOptionalInit<Paths[Path], Method>,
+  >(
+    method: Method,
+    path: Path,
+    options: RequestOptions &
+      Init & {
+        observe: "events";
+        responseType: "text";
+      },
+  ): Observable<HttpEvent<string>>;
+  /**
+   * Constructs a request which interprets the body as a JavaScript object and returns the full
+   * event stream.
+   *
+   * @param method  The HTTP method.
+   * @param url     The endpoint URL.
+   * @param options The HTTP options to send with the  request.
+   *
+   * @return An `Observable` of all `HttpEvent`s for the request,
+   * with the response body of type `Object`.
+   */
+  request<
+    Method extends HttpMethod,
+    Path extends PathsWithMethod<Paths, Method>,
+    Init extends MaybeOptionalInit<Paths[Path], Method>,
+  >(
+    method: Method,
+    path: Path,
+    options: RequestOptions &
+      Init & {
+        observe: "events";
+        responseType?: "json";
+      },
+  ): Observable<HttpEvent<JsonResponse<Paths[Path][Method]>>>;
+  /**
+   * Constructs a request which interprets the body as an `ArrayBuffer`
+   * and returns the full `HttpResponse`.
+   *
+   * @param method  The HTTP method.
+   * @param url     The endpoint URL.
+   * @param options The HTTP options to send with the request.
+   *
+   * @return An `Observable` of the `HttpResponse`, with the response body as an `ArrayBuffer`.
+   */
+  request<
+    Method extends HttpMethod,
+    Path extends PathsWithMethod<Paths, Method>,
+    Init extends MaybeOptionalInit<Paths[Path], Method>,
+  >(
+    method: Method,
+    path: Path,
+    options: RequestOptions &
+      Init & {
+        observe: "response";
+        responseType: "arraybuffer";
+      },
+  ): Observable<HttpResponse<ArrayBuffer>>;
+  /**
+   * Constructs a request which interprets the body as a `Blob` and returns the full `HttpResponse`.
+   *
+   * @param method  The HTTP method.
+   * @param url     The endpoint URL.
+   * @param options The HTTP options to send with the request.
+   *
+   * @return An `Observable` of the `HttpResponse`, with the response body of type `Blob`.
+   */
+  request<
+    Method extends HttpMethod,
+    Path extends PathsWithMethod<Paths, Method>,
+    Init extends MaybeOptionalInit<Paths[Path], Method>,
+  >(
+    method: Method,
+    path: Path,
+    options: RequestOptions &
+      Init & {
+        observe: "response";
+        responseType: "blob";
+      },
+  ): Observable<HttpResponse<Blob>>;
+  /**
+   * Constructs a request which interprets the body as a text stream and returns the full
+   * `HttpResponse`.
+   *
+   * @param method  The HTTP method.
+   * @param url     The endpoint URL.
+   * @param options The HTTP options to send with the request.
+   *
+   * @return An `Observable` of the HTTP response, with the response body of type string.
+   */
+  request<
+    Method extends HttpMethod,
+    Path extends PathsWithMethod<Paths, Method>,
+    Init extends MaybeOptionalInit<Paths[Path], Method>,
+  >(
+    method: Method,
+    path: Path,
+    options: RequestOptions &
+      Init & {
+        observe: "response";
+        responseType: "text";
+      },
+  ): Observable<HttpResponse<string>>;
+  /**
+   * Constructs a request which interprets the body as a JavaScript object and returns the full
+   * `HttpResponse`.
+   *
+   * @param method  The HTTP method.
+   * @param url     The endpoint URL.
+   * @param options The HTTP options to send with the request.
+   *
+   * @return An `Observable` of the full `HttpResponse`,
+   * with the response body of type `Object`.
+   */
+  request<
+    Method extends HttpMethod,
+    Path extends PathsWithMethod<Paths, Method>,
+    Init extends MaybeOptionalInit<Paths[Path], Method>,
+  >(
+    method: Method,
+    path: Path,
+    options: RequestOptions &
+      Init & {
+        observe: "response";
+        responseType?: "json";
+      },
+  ): Observable<HttpResponse<JsonResponse<Paths[Path][Method]>>>;
+  /**
+   * Constructs a request which interprets the body as a JavaScript object and returns the full
+   * `HttpResponse` as a JavaScript object.
+   *
+   * @param method  The HTTP method.
+   * @param url     The endpoint URL.
+   * @param options The HTTP options to send with the request.
+   *
+   * @return An `Observable` of the `HttpResponse`, with the response body of type `Object`.
+   */
+  request<
+    Method extends HttpMethod,
+    Path extends PathsWithMethod<Paths, Method>,
+    Init extends MaybeOptionalInit<Paths[Path], Method>,
+  >(
+    method: Method,
+    path: Path,
+    ...options: InitParam<
+      RequestOptions &
+        Init & {
+          observe?: "body";
+          responseType?: "json";
+        }
+    >
+  ): Observable<JsonResponse<Paths[Path][Method]>>;
   /**
    * Constructs a `DELETE` request that interprets the body as an `ArrayBuffer`
    *  and returns the response as an `ArrayBuffer`.
@@ -73,7 +361,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return  An `Observable` of the response body as an `ArrayBuffer`.
    */
   delete<Path extends PathsWithMethod<Paths, "delete">, Init extends MaybeOptionalInit<Paths[Path], "delete">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       Init & {
         observe?: "body";
@@ -90,7 +378,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response body as a `Blob`.
    */
   delete<Path extends PathsWithMethod<Paths, "delete">, Init extends MaybeOptionalInit<Paths[Path], "delete">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       Init & {
         observe?: "body";
@@ -107,7 +395,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body of type string.
    */
   delete<Path extends PathsWithMethod<Paths, "delete">, Init extends MaybeOptionalInit<Paths[Path], "delete">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       Init & {
         observe?: "body";
@@ -125,7 +413,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with response body as an `ArrayBuffer`.
    */
   delete<Path extends PathsWithMethod<Paths, "delete">, Init extends MaybeOptionalInit<Paths[Path], "delete">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       Init & {
         observe: "events";
@@ -143,7 +431,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * `Blob`.
    */
   delete<Path extends PathsWithMethod<Paths, "delete">, Init extends MaybeOptionalInit<Paths[Path], "delete">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       Init & {
         observe: "events";
@@ -161,7 +449,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * body of type string.
    */
   delete<Path extends PathsWithMethod<Paths, "delete">, Init extends MaybeOptionalInit<Paths[Path], "delete">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       Init & {
         observe: "events";
@@ -179,13 +467,13 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * type `Object`.
    */
   delete<Path extends PathsWithMethod<Paths, "delete">, Init extends MaybeOptionalInit<Paths[Path], "delete">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       Init & {
         observe: "events";
         responseType?: "json";
       },
-  ): Observable<HttpEvent<FetchResponse<Paths[Path]["delete"], "application/json">>>;
+  ): Observable<HttpEvent<JsonResponse<Paths[Path]["delete"]>>>;
   /**
    * Constructs a `DELETE` request that interprets the body as an `ArrayBuffer` and returns
    *  the full `HttpResponse`.
@@ -196,7 +484,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the full `HttpResponse`, with the response body as an `ArrayBuffer`.
    */
   delete<Path extends PathsWithMethod<Paths, "delete">, Init extends MaybeOptionalInit<Paths[Path], "delete">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       Init & {
         observe: "response";
@@ -213,7 +501,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the `HttpResponse`, with the response body of type `Blob`.
    */
   delete<Path extends PathsWithMethod<Paths, "delete">, Init extends MaybeOptionalInit<Paths[Path], "delete">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       Init & {
         observe: "response";
@@ -230,7 +518,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the full `HttpResponse`, with the response body of type string.
    */
   delete<Path extends PathsWithMethod<Paths, "delete">, Init extends MaybeOptionalInit<Paths[Path], "delete">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       Init & {
         observe: "response";
@@ -248,13 +536,13 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    *
    */
   delete<Path extends PathsWithMethod<Paths, "delete">, Init extends MaybeOptionalInit<Paths[Path], "delete">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       Init & {
         observe: "response";
         responseType?: "json";
       },
-  ): Observable<HttpResponse<FetchResponse<Paths[Path]["delete"], "application/json">>>;
+  ): Observable<HttpResponse<JsonResponse<Paths[Path]["delete"]>>>;
   /**
    * Constructs a `DELETE` request that interprets the body as JSON and
    * returns the response body as an object parsed from JSON.
@@ -265,7 +553,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body of type `Object`.
    */
   delete<Path extends PathsWithMethod<Paths, "delete">, Init extends MaybeOptionalInit<Paths[Path], "delete">>(
-    url: Path,
+    path: Path,
     ...options: InitParam<
       Omit<RequestOptions, "transferCache"> &
         Init & {
@@ -273,7 +561,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
           responseType?: "json";
         }
     >
-  ): Observable<FetchResponse<Paths[Path]["delete"], "application/json">>;
+  ): Observable<JsonResponse<Paths[Path]["delete"]>>;
   /**
    * Constructs a `GET` request that interprets the body as an `ArrayBuffer` and returns the
    * response in an `ArrayBuffer`.
@@ -284,7 +572,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body as an `ArrayBuffer`.
    */
   get<Path extends PathsWithMethod<Paths, "get">, Init extends MaybeOptionalInit<Paths[Path], "get">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe?: "body";
@@ -301,7 +589,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body as a `Blob`.
    */
   get<Path extends PathsWithMethod<Paths, "get">, Init extends MaybeOptionalInit<Paths[Path], "get">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe?: "body";
@@ -318,7 +606,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body of type string.
    */
   get<Path extends PathsWithMethod<Paths, "get">, Init extends MaybeOptionalInit<Paths[Path], "get">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe?: "body";
@@ -336,7 +624,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * body as an `ArrayBuffer`.
    */
   get<Path extends PathsWithMethod<Paths, "get">, Init extends MaybeOptionalInit<Paths[Path], "get">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe: "events";
@@ -353,7 +641,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body as a `Blob`.
    */
   get<Path extends PathsWithMethod<Paths, "get">, Init extends MaybeOptionalInit<Paths[Path], "get">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe: "events";
@@ -370,7 +658,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body of type string.
    */
   get<Path extends PathsWithMethod<Paths, "get">, Init extends MaybeOptionalInit<Paths[Path], "get">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe: "events";
@@ -387,13 +675,13 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body of type `Object`.
    */
   get<Path extends PathsWithMethod<Paths, "get">, Init extends MaybeOptionalInit<Paths[Path], "get">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe: "events";
         responseType?: "json";
       },
-  ): Observable<HttpEvent<FetchResponse<Paths[Path]["get"], "application/json">>>;
+  ): Observable<HttpEvent<JsonResponse<Paths[Path]["get"]>>>;
   /**
    * Constructs a `GET` request that interprets the body as an `ArrayBuffer` and
    * returns the full `HttpResponse`.
@@ -405,7 +693,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body as an `ArrayBuffer`.
    */
   get<Path extends PathsWithMethod<Paths, "get">, Init extends MaybeOptionalInit<Paths[Path], "get">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe: "response";
@@ -423,7 +711,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body as a `Blob`.
    */
   get<Path extends PathsWithMethod<Paths, "get">, Init extends MaybeOptionalInit<Paths[Path], "get">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe: "response";
@@ -441,7 +729,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body of type string.
    */
   get<Path extends PathsWithMethod<Paths, "get">, Init extends MaybeOptionalInit<Paths[Path], "get">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe: "response";
@@ -459,13 +747,13 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body of type `Object`.
    */
   get<Path extends PathsWithMethod<Paths, "get">, Init extends MaybeOptionalInit<Paths[Path], "get">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe: "response";
         responseType?: "json";
       },
-  ): Observable<HttpResponse<FetchResponse<Paths[Path]["get"], "application/json">>>;
+  ): Observable<HttpResponse<JsonResponse<Paths[Path]["get"]>>>;
   /**
    * Constructs a `GET` request that interprets the body as JSON and
    * returns the response body as an object parsed from JSON.
@@ -477,7 +765,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response body as a JavaScript object.
    */
   get<Path extends PathsWithMethod<Paths, "get">, Init extends MaybeOptionalInit<Paths[Path], "get">>(
-    url: Path,
+    path: Path,
     ...options: InitParam<
       RequestOptions &
         OmitBody<Init> & {
@@ -485,7 +773,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
           responseType?: "json";
         }
     >
-  ): Observable<FetchResponse<Paths[Path]["get"], "application/json">>;
+  ): Observable<JsonResponse<Paths[Path]["get"]>>;
   /**
    * Constructs a `HEAD` request that interprets the body as an `ArrayBuffer` and
    * returns the response as an `ArrayBuffer`.
@@ -496,7 +784,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body as an `ArrayBuffer`.
    */
   head<Path extends PathsWithMethod<Paths, "head">, Init extends MaybeOptionalInit<Paths[Path], "head">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe?: "body";
@@ -513,7 +801,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return  An `Observable` of the response, with the response body as a `Blob`.
    */
   head<Path extends PathsWithMethod<Paths, "head">, Init extends MaybeOptionalInit<Paths[Path], "head">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe?: "body";
@@ -530,7 +818,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body of type string.
    */
   head<Path extends PathsWithMethod<Paths, "head">, Init extends MaybeOptionalInit<Paths[Path], "head">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe?: "body";
@@ -548,7 +836,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body as an `ArrayBuffer`.
    */
   head<Path extends PathsWithMethod<Paths, "head">, Init extends MaybeOptionalInit<Paths[Path], "head">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe: "events";
@@ -566,7 +854,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body as a `Blob`.
    */
   head<Path extends PathsWithMethod<Paths, "head">, Init extends MaybeOptionalInit<Paths[Path], "head">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe: "events";
@@ -584,7 +872,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * string.
    */
   head<Path extends PathsWithMethod<Paths, "head">, Init extends MaybeOptionalInit<Paths[Path], "head">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe: "events";
@@ -602,13 +890,13 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * type `Object`.
    */
   head<Path extends PathsWithMethod<Paths, "head">, Init extends MaybeOptionalInit<Paths[Path], "head">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe: "events";
         responseType?: "json";
       },
-  ): Observable<HttpEvent<FetchResponse<Paths[Path]["head"], "application/json">>>;
+  ): Observable<HttpEvent<JsonResponse<Paths[Path]["head"]>>>;
   /**
    * Constructs a `HEAD` request that interprets the body as an `ArrayBuffer`
    *  and returns the full HTTP response.
@@ -620,7 +908,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body as an `ArrayBuffer`.
    */
   head<Path extends PathsWithMethod<Paths, "head">, Init extends MaybeOptionalInit<Paths[Path], "head">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe: "response";
@@ -638,7 +926,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body as a blob.
    */
   head<Path extends PathsWithMethod<Paths, "head">, Init extends MaybeOptionalInit<Paths[Path], "head">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe: "response";
@@ -656,7 +944,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body of type string.
    */
   head<Path extends PathsWithMethod<Paths, "head">, Init extends MaybeOptionalInit<Paths[Path], "head">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe: "response";
@@ -674,13 +962,13 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body of type `Object`.
    */
   head<Path extends PathsWithMethod<Paths, "head">, Init extends MaybeOptionalInit<Paths[Path], "head">>(
-    url: Path,
+    path: Path,
     options: RequestOptions &
       OmitBody<Init> & {
         observe: "response";
         responseType?: "json";
       },
-  ): Observable<HttpResponse<FetchResponse<Paths[Path]["head"], "application/json">>>;
+  ): Observable<HttpResponse<JsonResponse<Paths[Path]["head"]>>>;
   /**
       
          * Constructs a `HEAD` request that interprets the body as JSON and
@@ -692,7 +980,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
          * @return An `Observable` of the response, with the response body as an object parsed from JSON.
          */
   head<Path extends PathsWithMethod<Paths, "head">, Init extends MaybeOptionalInit<Paths[Path], "head">>(
-    url: Path,
+    path: Path,
     ...options: InitParam<
       RequestOptions &
         OmitBody<Init> & {
@@ -700,7 +988,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
           responseType?: "json";
         }
     >
-  ): Observable<FetchResponse<Paths[Path]["head"], "application/json">>;
+  ): Observable<JsonResponse<Paths[Path]["head"]>>;
   /**
    * Constructs an `OPTIONS` request that interprets the body as an
    * `ArrayBuffer` and returns the response as an `ArrayBuffer`.
@@ -711,7 +999,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body as an `ArrayBuffer`.
    */
   options<Path extends PathsWithMethod<Paths, "options">, Init extends MaybeOptionalInit<Paths[Path], "options">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
         observe?: "body";
@@ -728,7 +1016,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body as a `Blob`.
    */
   options<Path extends PathsWithMethod<Paths, "options">, Init extends MaybeOptionalInit<Paths[Path], "options">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
         observe?: "body";
@@ -746,7 +1034,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body of type string.
    */
   options<Path extends PathsWithMethod<Paths, "options">, Init extends MaybeOptionalInit<Paths[Path], "options">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
         observe?: "body";
@@ -764,7 +1052,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body as an `ArrayBuffer`.
    */
   options<Path extends PathsWithMethod<Paths, "options">, Init extends MaybeOptionalInit<Paths[Path], "options">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
         observe: "events";
@@ -782,7 +1070,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body as a `Blob`.
    */
   options<Path extends PathsWithMethod<Paths, "options">, Init extends MaybeOptionalInit<Paths[Path], "options">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
         observe: "events";
@@ -800,7 +1088,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body of type string.
    */
   options<Path extends PathsWithMethod<Paths, "options">, Init extends MaybeOptionalInit<Paths[Path], "options">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
         observe: "events";
@@ -818,13 +1106,13 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * body of type `Object`.
    */
   options<Path extends PathsWithMethod<Paths, "options">, Init extends MaybeOptionalInit<Paths[Path], "options">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
         observe: "events";
         responseType?: "json";
       },
-  ): Observable<HttpEvent<FetchResponse<Paths[Path]["options"], "application/json">>>;
+  ): Observable<HttpEvent<JsonResponse<Paths[Path]["options"]>>>;
   /**
    * Constructs an `OPTIONS` request that interprets the body as an `ArrayBuffer`
    *  and returns the full HTTP response.
@@ -836,7 +1124,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body as an `ArrayBuffer`.
    */
   options<Path extends PathsWithMethod<Paths, "options">, Init extends MaybeOptionalInit<Paths[Path], "options">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
         observe: "response";
@@ -854,7 +1142,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body as a `Blob`.
    */
   options<Path extends PathsWithMethod<Paths, "options">, Init extends MaybeOptionalInit<Paths[Path], "options">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
         observe: "response";
@@ -872,7 +1160,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body of type string.
    */
   options<Path extends PathsWithMethod<Paths, "options">, Init extends MaybeOptionalInit<Paths[Path], "options">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
         observe: "response";
@@ -890,13 +1178,13 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body of type `Object`.
    */
   options<Path extends PathsWithMethod<Paths, "options">, Init extends MaybeOptionalInit<Paths[Path], "options">>(
-    url: Path,
+    path: Path,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
         observe: "response";
         responseType?: "json";
       },
-  ): Observable<HttpResponse<FetchResponse<Paths[Path]["options"], "application/json">>>;
+  ): Observable<HttpResponse<JsonResponse<Paths[Path]["options"]>>>;
   /**
     
        * Constructs an `OPTIONS` request that interprets the body as JSON and returns the
@@ -908,7 +1196,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
        * @return An `Observable` of the response, with the response body as an object parsed from JSON.
        */
   options<Path extends PathsWithMethod<Paths, "options">, Init extends MaybeOptionalInit<Paths[Path], "options">>(
-    url: Path,
+    path: Path,
     ...options: InitParam<
       Omit<RequestOptions, "transferCache"> &
         OmitBody<Init> & {
@@ -916,7 +1204,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
           responseType?: "json";
         }
     >
-  ): Observable<FetchResponse<Paths[Path]["options"], "application/json">>;
+  ): Observable<JsonResponse<Paths[Path]["options"]>>;
   /**
    * Constructs a `PATCH` request that interprets the body as an `ArrayBuffer` and returns
    * the response as an `ArrayBuffer`.
@@ -928,7 +1216,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body as an `ArrayBuffer`.
    */
   patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -947,7 +1235,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body as a `Blob`.
    */
   patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -966,7 +1254,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with a response body of type string.
    */
   patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -986,7 +1274,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body as an `ArrayBuffer`.
    */
   patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1006,7 +1294,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * response body as `Blob`.
    */
   patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1026,7 +1314,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * response body of type string.
    */
   patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1046,14 +1334,14 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with a response body of type `Object`.
    */
   patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
         observe: "events";
         responseType?: "json";
       },
-  ): Observable<HttpEvent<FetchResponse<Paths[Path]["patch"], "application/json">>>;
+  ): Observable<HttpEvent<JsonResponse<Paths[Path]["patch"]>>>;
   /**
    * Constructs a `PATCH` request that interprets the body as an `ArrayBuffer`
    *  and returns the full `HttpResponse`.
@@ -1066,7 +1354,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body as an `ArrayBuffer`.
    */
   patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1086,7 +1374,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body as a `Blob`.
    */
   patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1106,7 +1394,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with a response body of type string.
    */
   patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1126,14 +1414,14 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with a response body in the requested type.
    */
   patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
         observe: "response";
         responseType?: "json";
       },
-  ): Observable<HttpResponse<FetchResponse<Paths[Path]["patch"], "application/json">>>;
+  ): Observable<HttpResponse<JsonResponse<Paths[Path]["patch"]>>>;
   /**
    * Constructs a `PATCH` request that interprets the body as JSON and
    * returns the response body as an object parsed from JSON.
@@ -1145,7 +1433,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body as an object parsed from JSON.
    */
   patch<Path extends PathsWithMethod<Paths, "patch">, Init extends MaybeOptionalInit<Paths[Path], "patch">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     ...options: InitParam<
       Omit<RequestOptions, "transferCache"> &
@@ -1154,7 +1442,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
           responseType?: "json";
         }
     >
-  ): Observable<FetchResponse<Paths[Path]["patch"], "application/json">>;
+  ): Observable<JsonResponse<Paths[Path]["patch"]>>;
   /**
    * Constructs a `POST` request that interprets the body as an `ArrayBuffer` and returns
    * an `ArrayBuffer`.
@@ -1166,7 +1454,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body as an `ArrayBuffer`.
    */
   post<Path extends PathsWithMethod<Paths, "post">, Init extends MaybeOptionalInit<Paths[Path], "post">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1185,7 +1473,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body as a `Blob`.
    */
   post<Path extends PathsWithMethod<Paths, "post">, Init extends MaybeOptionalInit<Paths[Path], "post">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1204,7 +1492,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with a response body of type string.
    */
   post<Path extends PathsWithMethod<Paths, "post">, Init extends MaybeOptionalInit<Paths[Path], "post">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1224,7 +1512,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body as an `ArrayBuffer`.
    */
   post<Path extends PathsWithMethod<Paths, "post">, Init extends MaybeOptionalInit<Paths[Path], "post">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1243,7 +1531,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of all `HttpEvent`s for the request, with the response body as `Blob`.
    */
   post<Path extends PathsWithMethod<Paths, "post">, Init extends MaybeOptionalInit<Paths[Path], "post">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1263,7 +1551,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with a response body of type string.
    */
   post<Path extends PathsWithMethod<Paths, "post">, Init extends MaybeOptionalInit<Paths[Path], "post">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1283,14 +1571,14 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with a response body of type `Object`.
    */
   post<Path extends PathsWithMethod<Paths, "post">, Init extends MaybeOptionalInit<Paths[Path], "post">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
         observe: "events";
         responseType?: "json";
       },
-  ): Observable<HttpEvent<FetchResponse<Paths[Path]["post"], "application/json">>>;
+  ): Observable<HttpEvent<JsonResponse<Paths[Path]["post"]>>>;
   /**
    * Constructs a POST request that interprets the body as an `ArrayBuffer`
    *  and returns the full `HttpResponse`.
@@ -1303,7 +1591,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * `ArrayBuffer`.
    */
   post<Path extends PathsWithMethod<Paths, "post">, Init extends MaybeOptionalInit<Paths[Path], "post">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1323,7 +1611,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body as a `Blob`.
    */
   post<Path extends PathsWithMethod<Paths, "post">, Init extends MaybeOptionalInit<Paths[Path], "post">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1343,7 +1631,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with a response body of type string.
    */
   post<Path extends PathsWithMethod<Paths, "post">, Init extends MaybeOptionalInit<Paths[Path], "post">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1363,14 +1651,14 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * `Object`.
    */
   post<Path extends PathsWithMethod<Paths, "post">, Init extends MaybeOptionalInit<Paths[Path], "post">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
         observe: "response";
         responseType?: "json";
       },
-  ): Observable<HttpResponse<FetchResponse<Paths[Path]["post"], "application/json">>>;
+  ): Observable<HttpResponse<JsonResponse<Paths[Path]["post"]>>>;
   /**
    * Constructs a `POST` request that interprets the body as JSON
    * and returns the response body as an object parsed from JSON.
@@ -1382,7 +1670,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body as an object parsed from JSON.
    */
   post<Path extends PathsWithMethod<Paths, "post">, Init extends MaybeOptionalInit<Paths[Path], "post">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     ...options: InitParam<
       Omit<RequestOptions, "transferCache"> &
@@ -1391,7 +1679,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
           responseType?: "json";
         }
     >
-  ): Observable<FetchResponse<Paths[Path]["post"], "application/json">>;
+  ): Observable<JsonResponse<Paths[Path]["post"]>>;
   /**
    * Constructs a `PUT` request that interprets the body as an `ArrayBuffer` and returns the
    * response as an `ArrayBuffer`.
@@ -1403,7 +1691,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body as an `ArrayBuffer`.
    */
   put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1422,7 +1710,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with the response body as a `Blob`.
    */
   put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1441,7 +1729,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response, with a response body of type string.
    */
   put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1461,7 +1749,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body as an `ArrayBuffer`.
    */
   put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1481,7 +1769,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body as a `Blob`.
    */
   put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1501,7 +1789,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * of type string.
    */
   put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1521,14 +1809,14 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * type `Object`.
    */
   put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
         observe: "events";
         responseType?: "json";
       },
-  ): Observable<HttpEvent<FetchResponse<Paths[Path]["put"], "application/json">>>;
+  ): Observable<HttpEvent<JsonResponse<Paths[Path]["put"]>>>;
   /**
    * Constructs a `PUT` request that interprets the body as an
    * `ArrayBuffer` and returns an observable of the full HTTP response.
@@ -1541,7 +1829,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * `ArrayBuffer`.
    */
   put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1561,7 +1849,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * with the response body as a `Blob`.
    */
   put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1581,7 +1869,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * string.
    */
   put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
@@ -1601,14 +1889,14 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * of type 'Object`.
    */
   put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     options: Omit<RequestOptions, "transferCache"> &
       OmitBody<Init> & {
         observe: "response";
         responseType?: "json";
       },
-  ): Observable<HttpResponse<FetchResponse<Paths[Path]["put"], "application/json">>>;
+  ): Observable<HttpResponse<JsonResponse<Paths[Path]["put"]>>>;
   /**
    * Constructs a `PUT` request that interprets the body as JSON
    * and returns an observable of JavaScript object.
@@ -1620,7 +1908,7 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
    * @return An `Observable` of the response as a JavaScript object.
    */
   put<Path extends PathsWithMethod<Paths, "put">, Init extends MaybeOptionalInit<Paths[Path], "put">>(
-    url: Path,
+    path: Path,
     body: PickBody<Init>,
     ...options: InitParam<
       Omit<RequestOptions, "transferCache"> &
@@ -1629,11 +1917,5 @@ export interface OpenapiHttpClient<Paths extends Record<string, any>> extends Ht
           responseType?: "json";
         }
     >
-  ): Observable<FetchResponse<Paths[Path]["put"], "application/json">>;
+  ): Observable<JsonResponse<Paths[Path]["put"]>>;
 }
-
-export declare const http: OpenapiHttpClient<paths>;
-
-http.patch("/app/hook/config", {}).subscribe((v) => {
-  v;
-});
