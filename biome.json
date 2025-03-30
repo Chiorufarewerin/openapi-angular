@@ -4,7 +4,8 @@
     "enabled": false
   },
   "files": {
-    "ignore": ["**/dist/**", "**/package.json"]
+    "ignore": ["**/dist/**", "**/package.json"],
+    "maxSize": 104857600
   },
   "formatter": {
     "indentStyle": "space",
