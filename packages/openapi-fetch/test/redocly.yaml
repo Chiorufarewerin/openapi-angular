@@ -45,11 +45,3 @@ apis:
     root: ./path-based-client/schemas/path-based-client.yaml
     x-openapi-ts:
       output: ./path-based-client/schemas/path-based-client.d.ts
-  github:
-    root: ../../openapi-typescript/examples/github-api.yaml
-    x-openapi-ts:
-      output: ./examples/schemas/github.d.ts
-  stripe:
-    root: ../../openapi-typescript/examples/stripe-api.yaml
-    x-openapi-ts:
-      output: ./examples/schemas/stripe.d.ts
