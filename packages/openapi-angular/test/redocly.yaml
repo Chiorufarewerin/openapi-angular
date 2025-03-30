@@ -1,0 +1,7 @@
+# Note: add more schemas here!
+# each test folder can test multiple schemas if needed
+apis:
+  common:
+    root: ./common/schemas/common.yaml
+    x-openapi-ts:
+      output: ./common/schemas/common.d.ts
