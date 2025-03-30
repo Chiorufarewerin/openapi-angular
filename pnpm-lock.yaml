@@ -50,6 +50,9 @@ importers:
       '@angular/common':
         specifier: '>16'
         version: 19.2.4(@angular/core@19.2.4(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2)
+      '@angular/core':
+        specifier: '>16'
+        version: 19.2.4(rxjs@7.8.2)(zone.js@0.15.0)
       openapi-typescript-helpers:
         specifier: ^0.0.15
         version: 0.0.15
