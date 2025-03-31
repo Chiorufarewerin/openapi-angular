@@ -1,7 +1,7 @@
 {
   "name": "openapi-angular",
   "description": "Type-safe http client for your OpenAPI schema especially for Angular.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": {
     "name": "Chiorufarewerin",
     "email": "artur1998g@gmail.com"
