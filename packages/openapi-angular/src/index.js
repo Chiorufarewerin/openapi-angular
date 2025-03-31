@@ -329,7 +329,7 @@ export function createFinalURL(pathname, options) {
   if (options.params?.path) {
     finalURL = defaultPathSerializer(finalURL, options.params.path);
   }
-  let search = options.querySerializer(options.params.query ?? {});
+  let search = options.querySerializer(options.params?.query ?? {});
   if (search.startsWith("?")) {
     search = search.substring(1);
   }
