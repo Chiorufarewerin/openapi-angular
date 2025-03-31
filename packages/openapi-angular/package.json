@@ -1,7 +1,7 @@
 {
   "name": "openapi-angular",
   "description": "Type-safe http client for your OpenAPI schema especially for Angular.",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": {
     "name": "Chiorufarewerin",
     "email": "artur1998g@gmail.com"
@@ -16,18 +16,12 @@
       "import": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/index.d.cts",
-        "default": "./dist/cjs/index.cjs"
       }
-    },
-    "./*": "./*"
+    }
   },
-  "homepage": "https://openapi-ts.dev",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openapi-ts/openapi-typescript",
+    "url": "https://github.com/Chiorufarewerin/openapi-angular",
     "directory": "packages/openapi-angular"
   },
   "keywords": [
@@ -41,11 +35,11 @@
     "angular"
   ],
   "scripts": {
-    "build": "pnpm run build:clean && pnpm run build:js && pnpm run build:js-min && pnpm run build:cjs",
+    "build": "pnpm run build:clean && pnpm run build:js && pnpm run build:js-min",
     "build:clean": "del-cli dist",
     "build:js": "mkdir -p dist && cp src/* dist",
-    "build:js-min": "esbuild --bundle src/index.js --format=esm --minify --outfile=dist/index.min.js && cp dist/index.d.ts dist/index.min.d.ts",
-    "build:cjs": "esbuild --bundle src/index.js --format=cjs --outfile=dist/cjs/index.cjs && cp dist/index.d.ts dist/cjs/index.d.cts",
+    "build:js-min": "esbuild src/index.js --format=esm --minify --outfile=dist/index.min.js && cp dist/index.d.ts dist/index.min.d.t",
+    "build:publish": "mkdir dist && cp src/index.d.ts dist/index.d.ts && esbuild src/index.js --format=esm --minify --outfile=dist/index.js",
     "format": "biome format . --write",
     "lint": "biome check .",
     "generate-types": "openapi-typescript -c test/redocly.yaml",
@@ -60,11 +54,13 @@
     "e2e-vite-start": "vite preview test/e2e/app",
     "version": "pnpm run prepare && pnpm run build"
   },
-  "dependencies": {
-    "openapi-typescript-helpers": "^0.0.15",
+  "peerDependencies": {
     "@angular/core": ">16",
     "@angular/common": ">16",
     "rxjs": "^7.8.0"
+  },
+  "dependencies": {
+    "openapi-typescript-helpers": "^0.0.15"
   },
   "devDependencies": {
     "axios": "^1.7.9",
