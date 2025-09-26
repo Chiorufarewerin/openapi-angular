@@ -3,5 +3,34 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
+    "openapi-angular": {
+      "projectType": "library",
+      "root": "projects/openapi-angular",
+      "sourceRoot": "projects/openapi-angular/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/openapi-angular/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/openapi-angular/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "projects/openapi-angular/tsconfig.spec.json"
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": "b1fd6ec7-948c-46ad-86fe-c2b9bc8d7c66"
   }
 }
