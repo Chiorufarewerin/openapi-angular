@@ -8,9 +8,8 @@ describe('OpenapiAngular', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OpenapiAngular]
-    })
-    .compileComponents();
+      imports: [OpenapiAngular],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(OpenapiAngular);
     component = fixture.componentInstance;
