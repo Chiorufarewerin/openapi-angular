@@ -2,7 +2,7 @@ import { OpenapiQuerySerializerOptions, OpenapiQuerySerializer } from '../types/
 import { isRecord } from '../utils/common';
 import { serializeArrayParam, serializeObjectParam, serializePrimitiveParam } from './common';
 
-export function openapiCreateQuerySerializer(
+export function createQuerySerializer(
   options?: OpenapiQuerySerializerOptions,
 ): OpenapiQuerySerializer<unknown> {
   return function querySerializer(queryParams) {
@@ -54,11 +54,11 @@ export function combineQuerySerializers<T>(
   const querySerializer =
     typeof globalQuerySerializer === 'function'
       ? globalQuerySerializer
-      : openapiCreateQuerySerializer(globalQuerySerializer);
+      : createQuerySerializer(globalQuerySerializer);
   if (requestQuerySerializer) {
     return typeof requestQuerySerializer === 'function'
       ? requestQuerySerializer
-      : openapiCreateQuerySerializer({
+      : createQuerySerializer({
           ...(typeof globalQuerySerializer === 'object' ? globalQuerySerializer : {}),
           ...requestQuerySerializer,
         });

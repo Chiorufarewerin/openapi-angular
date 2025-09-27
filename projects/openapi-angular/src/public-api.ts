@@ -24,4 +24,3 @@ export type {
   OpenapiQuerySerializer,
   OpenapiQuerySerializerOptions,
 } from './lib/types/openapi-serializer';
-export { openapiCreateQuerySerializer } from './lib/serializers/query';

@@ -1,47 +1,40 @@
+import { firstValueFrom } from 'rxjs';
 import { describe, expect, test } from 'vitest';
 import type { paths } from './schemas/common.js';
-import { createObservedClient } from '../helpers.js';
 import { OpenapiRequest } from '../../public-api.js';
+import { openapiTestingClient } from '../testing.js';
+import { HttpHeaders, HttpResponse } from '@angular/common/http';
 
 describe('createClient options', () => {
   test('baseUrl', async () => {
     let actualURL = new URL('https://fakeurl.example');
-    const client = createObservedClient<paths>(
-      { baseUrl: 'https://api.foo.bar/v2' },
-      async (req) => {
-        actualURL = new URL(req.url);
-        return Response.json([]);
-      },
-    );
-    await client.GET('/resources');
+    using client = openapiTestingClient<paths>({ baseUrl: 'https://api.foo.bar/v2' }, (req) => {
+      actualURL = new URL(req.url);
+      return new HttpResponse({ body: [] });
+    });
+    await firstValueFrom(client.get('/resources'));
     expect(actualURL.href).toBe('https://api.foo.bar/v2/resources');
   });
 
   test('baseUrl removes trailing slash', async () => {
     let actualURL = new URL('https://fakeurl.example');
-    const client = createObservedClient<paths>(
-      { baseUrl: 'https://api.foo.bar/v3/' },
-      async (req) => {
-        actualURL = new URL(req.url);
-        return Response.json([]);
-      },
-    );
-    await client.GET('/resources');
+    using client = openapiTestingClient<paths>({ baseUrl: 'https://api.foo.bar/v3/' }, (req) => {
+      actualURL = new URL(req.url);
+      return new HttpResponse({ body: [] });
+    });
+    await firstValueFrom(client.get('/resources'));
     expect(actualURL.href).toBe('https://api.foo.bar/v3/resources');
   });
 
   test('baseUrl per request', async () => {
     let actualURL = new URL('https://fakeurl.example');
-    const client = createObservedClient<paths>(
-      { baseUrl: 'https://fakeurl.example' },
-      async (req) => {
-        actualURL = new URL(req.url);
-        return Response.json([]);
-      },
-    );
+    using client = openapiTestingClient<paths>({ baseUrl: 'https://fakeurl.example' }, (req) => {
+      actualURL = new URL(req.url);
+      return new HttpResponse({ body: [] });
+    });
 
     const localBaseUrl = 'https://api.foo.bar/v3';
-    await client.GET('/resources', { baseUrl: localBaseUrl });
+    await firstValueFrom(client.get('/resources', { baseUrl: localBaseUrl }));
 
     // assert baseUrl and path mesh as expected
     expect(actualURL.href).toBe('https://api.foo.bar/v3/resources');
@@ -49,43 +42,38 @@ describe('createClient options', () => {
 
   test('baseUrl per request causes no override on default baseUrl', async () => {
     let actualURL = new URL('https://fakeurl.example');
-    const client = createObservedClient<paths>(
-      { baseUrl: 'https://api.foo.bar/v2/' },
-      async (req) => {
-        actualURL = new URL(req.url);
-        return Response.json([]);
-      },
-    );
+    using client = openapiTestingClient<paths>({ baseUrl: 'https://api.foo.bar/v2/' }, (req) => {
+      actualURL = new URL(req.url);
+      return new HttpResponse({ body: [] });
+    });
 
     const localBaseUrl = 'https://api.foo.bar/v3';
-    await client.GET('/resources', { baseUrl: localBaseUrl });
+    await firstValueFrom(client.get('/resources', { baseUrl: localBaseUrl }));
 
     // assert baseUrl and path mesh as expected
     expect(actualURL.href).toBe('https://api.foo.bar/v3/resources');
 
-    await client.GET('/resources');
+    await firstValueFrom(client.get('/resources'));
 
     // assert baseUrl and path mesh as expected
     expect(actualURL.href).toBe('https://api.foo.bar/v2/resources');
   });
 
   describe('content-type', () => {
-    const BODY_ACCEPTING_METHODS = [['PUT'], ['POST'], ['DELETE'], ['OPTIONS'], ['PATCH']] as const;
-    const ALL_METHODS = [...BODY_ACCEPTING_METHODS, ['GET'], ['HEAD']] as const;
+    const BODY_ACCEPTING_METHODS = [['put'], ['post'], ['delete'], ['options'], ['patch']] as const;
+    const ALL_METHODS = [...BODY_ACCEPTING_METHODS, ['get'], ['head']] as const;
 
     async function fireRequestAndGetContentType(options: {
       defaultHeaders?: any;
       method: (typeof ALL_METHODS)[number][number];
       fetchOptions: OpenapiRequest<any>;
     }) {
-      let headers = new Headers();
-      const client = createObservedClient<any>({ headers: options.defaultHeaders }, async (req) => {
-        req.headers.forEach((value, name) => {
-          headers.set(name, value);
-        });
-        return Response.json([]);
+      let headers!: HttpHeaders;
+      using client = openapiTestingClient<any>({ headers: options.defaultHeaders }, (req) => {
+        headers = req.headers;
+        return new HttpResponse({ body: [] });
       });
-      await client[options.method]('/resources', options.fetchOptions as any);
+      await firstValueFrom(client[options.method]('/resources', options.fetchOptions as any));
       return headers.get('content-type');
     }
 
@@ -122,8 +110,7 @@ describe('createClient options', () => {
       BODIES.map((body) => [method, body] as const),
     );
 
-    // BEHAVIOR CHANGED
-    test.skip.each(METHOD_BODY_COMBINATIONS)(
+    test.each(METHOD_BODY_COMBINATIONS)(
       'implicit default content-type for body-full requests - %s, %j',
       async (method, body) => {
         const contentType = await fireRequestAndGetContentType({
@@ -131,7 +118,11 @@ describe('createClient options', () => {
           fetchOptions: { body },
         });
 
-        expect(contentType).toBe('application/json');
+        // OPENAPI-FETCH BEHAVIOR
+        // expect(contentType).toBe('application/json');
+
+        // OPENAPI-ANGULAR BEHAVIOR
+        expect(contentType).toBe(null);
       },
     );
 
@@ -148,8 +139,7 @@ describe('createClient options', () => {
       },
     );
 
-    // BEHAVIOR CHANGED
-    test.skip.each(METHOD_BODY_COMBINATIONS)(
+    test.each(METHOD_BODY_COMBINATIONS)(
       'native-fetch default content-type for body-full requests, when default is suppressed - %s, %j',
       async (method, body) => {
         const contentType = await fireRequestAndGetContentType({
