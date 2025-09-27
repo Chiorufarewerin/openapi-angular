@@ -8,6 +8,7 @@ import { OpenapiResponse } from '../types/openapi-response';
 import { removeTrailingSlash } from '../utils/common';
 import { createFinalURL } from '../serializers/url';
 import { combineQuerySerializers } from '../serializers/query';
+import { mergeHeaders } from '../utils/headers';
 
 export function openapiClient<Paths extends {}, Media extends MediaType = MediaType>(
   options?: OpenapiClientOptions,
@@ -27,7 +28,7 @@ export class OpenapiClientImpl<
 {
   constructor(
     private readonly http: HttpClient,
-    private readonly clientOptions: OpenapiClientOptions = {},
+    private readonly opts: OpenapiClientOptions = {},
   ) {}
 
   request<
@@ -43,19 +44,20 @@ export class OpenapiClientImpl<
       baseUrl: localBaseUrl,
       params = {},
       body,
+      headers,
       querySerializer: requestQuerySerializer,
-      bodySerializer = this.clientOptions.bodySerializer ?? identity,
+      bodySerializer = this.opts.bodySerializer ?? identity,
       ...restOptions
     } = init[0] || {};
-    const baseUrl =
-      (localBaseUrl ? removeTrailingSlash(localBaseUrl) : this.clientOptions.baseUrl) ?? '';
+    const baseUrl = (localBaseUrl ? removeTrailingSlash(localBaseUrl) : this.opts.baseUrl) ?? '';
     const querySerializer = combineQuerySerializers(
-      this.clientOptions.querySerializer,
+      this.opts.querySerializer,
       requestQuerySerializer,
     );
     const serializedBody = body === undefined ? undefined : bodySerializer(body as any);
     const url = createFinalURL(path, { baseUrl, params, querySerializer });
-    const requestOptions = { body: serializedBody, ...restOptions };
+    const finalHeaders = mergeHeaders(this.opts.headers, headers, params.header);
+    const requestOptions = { body: serializedBody, headers: finalHeaders, ...restOptions };
 
     return this.http.request<OpenapiResponse<Paths[Path][Method], Init, Media>>(
       method.toUpperCase(),

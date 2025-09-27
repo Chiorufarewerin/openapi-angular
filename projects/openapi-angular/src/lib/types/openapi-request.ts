@@ -9,6 +9,7 @@ import {
   OpenapiQuerySerializer,
   OpenapiQuerySerializerOptions,
 } from './openapi-serializer';
+import { OpenapiHeadersOptions } from './openapi-header';
 
 export type OpenapiRequest<T> = OpenapiRequestOptions<T> & OpenapiHttpRequestOptions;
 
@@ -19,9 +20,9 @@ export type OpenapiRequestOptions<T> = OpenapiParamsOption<T> &
 export type OpenapiParamsOption<T> = T extends {
   parameters: any;
 }
-  ? RequiredKeysOf<Omit<T['parameters'], 'header'>> extends never
-    ? { params?: Omit<T['parameters'], 'header'> }
-    : { params: Omit<T['parameters'], 'header'> }
+  ? RequiredKeysOf<T['parameters']> extends never
+    ? { params?: T['parameters'] }
+    : { params: T['parameters'] }
   : OpenapiDefaultParamsOption;
 
 export type OpenapiRequestBodyOption<T> =
@@ -39,12 +40,13 @@ export interface OpenapiDefaultParamsOption {
 
 export type OpenapiRequestCommonOptions<T> = {
   baseUrl?: string;
+  headers?: OpenapiHeadersOptions;
   querySerializer?: OpenapiQuerySerializer<T> | OpenapiQuerySerializerOptions;
   bodySerializer?: OpenapiBodySerializer<T>;
 };
 
 export type OpenapiHttpRequestOptions = {
-  headers?: HttpHeaders | Record<string, string | string[]>;
+  headers?: OpenapiHeadersOptions;
   context?: HttpContext;
   reportProgress?: boolean;
   withCredentials?: boolean;

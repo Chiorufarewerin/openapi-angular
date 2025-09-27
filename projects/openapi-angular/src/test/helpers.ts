@@ -11,7 +11,6 @@ import {
   openapiClient,
   OpenapiInitParam,
   OpenapiMaybeOptionalInit,
-  OpenapiResponse,
 } from '../public-api';
 import { firstValueFrom, Observable } from 'rxjs';
 import { OpenapiObservedResponse } from './helpers.types';
@@ -22,7 +21,10 @@ export function createObservedClient<T extends {}, M extends MediaType = MediaTy
   onRequest: (input: Request) => Promise<Response> = async () =>
     Response.json({ status: 200, message: 'OK' }),
 ) {
-  globalThis.fetch = (url, input) => onRequest(new Request(url, input));
+  globalThis.fetch = async (url, input) => {
+    const response = await onRequest(new Request(url, input));
+    return response;
+  };
 
   TestBed.configureTestingModule({
     providers: [provideZonelessChangeDetection(), provideHttpClient(withFetch())],
@@ -38,9 +40,17 @@ export function createObservedClient<T extends {}, M extends MediaType = MediaTy
   return new OpenapiObservedClient(client);
 }
 
-async function patch(data: Observable<any>): Promise<any> {
+async function patch(method: HttpMethod, data: Observable<any>): Promise<any> {
   try {
     const response = (await firstValueFrom(data)) as HttpResponse<unknown>;
+
+    if (
+      response.status === 204 ||
+      method === 'head' ||
+      response.headers.get('Content-Length') === '0'
+    ) {
+      return { data: undefined, response };
+    }
 
     return {
       data: response.body as any,
@@ -73,6 +83,7 @@ export class OpenapiObservedClient<
     ...init: OpenapiInitParam<Init>
   ): Promise<OpenapiObservedResponse<Paths[Path][Method], Init, Media>> {
     return patch(
+      method,
       this.client.request<Method, Path, Init>(method, path, {
         ...(init[0] || {}),
         observe: 'response',
@@ -88,6 +99,7 @@ export class OpenapiObservedClient<
     ...init: OpenapiInitParam<Init>
   ): Promise<OpenapiObservedResponse<Paths[Path]['get'], Init, Media>> {
     return patch(
+      'get',
       this.client.get<Path, Init>(path, {
         ...(init[0] || {}),
         observe: 'response',
@@ -103,6 +115,7 @@ export class OpenapiObservedClient<
     ...init: OpenapiInitParam<Init>
   ): Promise<OpenapiObservedResponse<Paths[Path]['head'], Init, Media>> {
     return patch(
+      'head',
       this.client.head<Path, Init>(path, {
         ...(init[0] || {}),
         observe: 'response',
@@ -118,6 +131,7 @@ export class OpenapiObservedClient<
     ...init: OpenapiInitParam<Init>
   ): Promise<OpenapiObservedResponse<Paths[Path]['options'], Init, Media>> {
     return patch(
+      'options',
       this.client.options<Path, Init>(path, {
         ...(init[0] || {}),
         observe: 'response',
@@ -133,6 +147,7 @@ export class OpenapiObservedClient<
     ...init: OpenapiInitParam<Init>
   ): Promise<OpenapiObservedResponse<Paths[Path]['patch'], Init, Media>> {
     return patch(
+      'patch',
       this.client.patch<Path, Init>(path, {
         ...(init[0] || {}),
         observe: 'response',
@@ -148,6 +163,7 @@ export class OpenapiObservedClient<
     ...init: OpenapiInitParam<Init>
   ): Promise<OpenapiObservedResponse<Paths[Path]['post'], Init, Media>> {
     return patch(
+      'post',
       this.client.post<Path, Init>(path, {
         ...(init[0] || {}),
         observe: 'response',
@@ -163,6 +179,7 @@ export class OpenapiObservedClient<
     ...init: OpenapiInitParam<Init>
   ): Promise<OpenapiObservedResponse<Paths[Path]['put'], Init, Media>> {
     return patch(
+      'put',
       this.client.put<Path, Init>(path, {
         ...(init[0] || {}),
         observe: 'response',
@@ -178,6 +195,7 @@ export class OpenapiObservedClient<
     ...init: OpenapiInitParam<Init>
   ): Promise<OpenapiObservedResponse<Paths[Path]['trace'], Init, Media>> {
     return patch(
+      'trace',
       this.client.trace<Path, Init>(path, {
         ...(init[0] || {}),
         observe: 'response',
@@ -193,10 +211,23 @@ export class OpenapiObservedClient<
     ...init: OpenapiInitParam<Init>
   ): Promise<OpenapiObservedResponse<Paths[Path]['delete'], Init, Media>> {
     return patch(
+      'delete',
       this.client.delete<Path, Init>(path, {
         ...(init[0] || {}),
         observe: 'response',
       } as any),
     );
   }
+}
+
+/**
+ * Convert a Headers object to a plain object for easier comparison
+ */
+export function headersToObj(headers: Headers | Record<string, string>): Record<string, string> {
+  const iter = headers instanceof Headers ? headers.entries() : Object.entries(headers);
+  const result: Record<string, string> = {};
+  for (const [k, v] of iter) {
+    result[k] = v;
+  }
+  return result;
 }
