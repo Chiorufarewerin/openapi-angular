@@ -2,7 +2,7 @@ import { HttpHeaders } from '@angular/common/http';
 import { OpenapiHeadersOptions } from '../types/openapi-header';
 
 export function mergeHeaders(...allHeaders: (OpenapiHeadersOptions | undefined)[]): HttpHeaders {
-  const finalHeaders = new HttpHeaders();
+  const finalHeaders = new Headers();
   for (const h of allHeaders) {
     if (!h || typeof h !== 'object') {
       continue;
@@ -19,10 +19,10 @@ export function mergeHeaders(...allHeaders: (OpenapiHeadersOptions | undefined)[
       }
     }
   }
-  return finalHeaders;
+  return new HttpHeaders(finalHeaders);
 }
 
-function getHeadersIterator(
+export function getHeadersIterator(
   headers: OpenapiHeadersOptions,
 ): Iterable<[string, string | string[] | boolean | number | null | undefined]> {
   if (headers instanceof Headers) {

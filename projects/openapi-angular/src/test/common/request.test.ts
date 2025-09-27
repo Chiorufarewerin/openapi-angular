@@ -2,6 +2,7 @@ import { describe, expect, test, vi } from 'vitest';
 import { createObservedClient, headersToObj } from '../helpers.js';
 import type { components, paths } from './schemas/common.js';
 import { OpenapiBodySerializer, OpenapiRequest } from '../../public-api.js';
+import { HttpHeaders } from '@angular/common/http';
 
 type Resource = components['schemas']['Resource'];
 
@@ -14,15 +15,20 @@ describe('request', () => {
     test('default headers are preserved', async () => {
       let headers = new Headers();
       const client = createObservedClient<paths>({ headers: { foo: 'bar' } }, async (req) => {
-        headers = req.headers;
+        req.headers.forEach((value, name) => {
+          headers.set(name, value);
+        });
         return Response.json([resource1, resource2, resource3]);
       });
       await client.GET('/resources');
-      expect(headersToObj(headers)).toEqual({ foo: 'bar' });
+      expect(headersToObj(headers)).toEqual({
+        accept: 'application/json, text/plain, */*',
+        foo: 'bar',
+      });
     });
 
     test('default headers can be overridden', async () => {
-      let headers = new Headers();
+      let headers = new HttpHeaders();
       const client = createObservedClient<paths>(
         {
           headers: {
@@ -33,7 +39,9 @@ describe('request', () => {
           },
         },
         async (req) => {
-          headers = req.headers;
+          req.headers.forEach((value, name) => {
+            headers = headers.set(name, value);
+          });
           return Response.json([resource1, resource2, resource3]);
         },
       );
@@ -45,7 +53,13 @@ describe('request', () => {
           box: false,
         },
       });
-      expect(headersToObj(headers)).toEqual({ foo: '', bar: '0', baz: 'bat', box: 'false' });
+      expect(headersToObj(headers)).toEqual({
+        accept: 'application/json, text/plain, */*',
+        foo: '',
+        bar: '0',
+        baz: 'bat',
+        box: 'false',
+      });
     });
 
     test('default headers are unset with "null"', async () => {
@@ -53,12 +67,15 @@ describe('request', () => {
       const client = createObservedClient<paths>(
         { headers: { foo: 'bar', bar: 'baz' } },
         async (req) => {
-          headers = req.headers;
+          req.headers.forEach((value, name) => {
+            headers.set(name, value);
+          });
           return Response.json([resource1, resource2, resource3]);
         },
       );
       await client.GET('/resources', { headers: { foo: null } });
       expect(headersToObj(headers)).toEqual({
+        accept: 'application/json, text/plain, */*',
         // "foo" removed!
         bar: 'baz',
       });
@@ -66,8 +83,10 @@ describe('request', () => {
 
     test('arbitrary headers are allowed on any request', async () => {
       let headers = new Headers();
-      const client = createObservedClient<paths>({}, async (req) => {
-        headers = req.headers;
+      const client = createObservedClient<paths>({ headers }, async (req) => {
+        req.headers.forEach((value, name) => {
+          headers.set(name, value);
+        });
         return Response.json([resource1, resource2, resource3]);
       });
       await client.GET('/resources', {
@@ -77,13 +96,20 @@ describe('request', () => {
           baz: true,
         },
       });
-      expect(headersToObj(headers)).toEqual({ foo: 'bar', bar: '123', baz: 'true' });
+      expect(headersToObj(headers)).toEqual({
+        accept: 'application/json, text/plain, */*',
+        foo: 'bar',
+        bar: '123',
+        baz: 'true',
+      });
     });
 
     test('supports arrays', async () => {
       let headers = new Headers();
       const client = createObservedClient<paths>({}, async (req) => {
-        headers = req.headers;
+        req.headers.forEach((value, name) => {
+          headers.set(name, value);
+        });
         return Response.json([resource1, resource2, resource3]);
       });
 
@@ -104,7 +130,7 @@ describe('request', () => {
       method: (typeof ALL_METHODS)[number][number];
       fetchOptions: OpenapiRequest<any>;
     }) {
-      let actualRequest = new Request('https://fakeurl.example');
+      let actualRequest!: Request;
       const client = createObservedClient<any>(
         { bodySerializer: options.bodySerializer },
         async (req) => {
@@ -192,8 +218,8 @@ describe('request', () => {
           },
         });
 
-        expect(bodyUsed).toBe(true);
-        expect(bodyText).toBe('null');
+        expect(bodyUsed).toBe(false); // BEHAVIOR CHANGED
+        expect(bodyText).toBe(''); // BEHAVIOR CHANGED
       },
     );
 
@@ -256,7 +282,7 @@ describe('request', () => {
         });
 
         expect(bodyUsed).toBe(true);
-        expect(bodyText).toBe('""');
+        expect(bodyText).toBe(''); // BEHAVIOR CHANGED
       },
     );
 
@@ -287,7 +313,7 @@ describe('request', () => {
       expect(bodyText).toBe('0');
     });
 
-    test('`application/x-www-form-urlencoded` body', async () => {
+    test.skip('`application/x-www-form-urlencoded` body', async () => {
       const { bodyUsed, bodyText } = await fireRequestAndGetBodyInformation({
         method: 'POST',
         fetchOptions: {

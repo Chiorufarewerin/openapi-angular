@@ -60,6 +60,6 @@ export type OpenapiHttpRequestOptions = {
   integrity?: string;
   transferCache?: { includeHeaders?: string[] } | boolean;
   timeout?: number;
-  responseType?: 'json';
-  observe?: 'body' | 'response';
+  responseType?: 'json' | 'text' | 'arraybuffer' | 'blob';
+  observe?: 'body' | 'response' | 'events';
 };

@@ -49,7 +49,7 @@ export class OpenapiClientImpl<
       bodySerializer = this.opts.bodySerializer ?? identity,
       ...restOptions
     } = init[0] || {};
-    const baseUrl = (localBaseUrl ? removeTrailingSlash(localBaseUrl) : this.opts.baseUrl) ?? '';
+    const baseUrl = removeTrailingSlash((localBaseUrl ? localBaseUrl : this.opts.baseUrl) ?? '');
     const querySerializer = combineQuerySerializers(
       this.opts.querySerializer,
       requestQuerySerializer,
