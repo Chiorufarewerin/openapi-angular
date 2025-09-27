@@ -1,59 +1,144 @@
-# OpenapiAngular
+# OpenAPI Angular
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.3.
+**openapi-angular** is a type-safe HTTP client for Angular that leverages your OpenAPI schema to provide fully typed API interactions.
 
-## Development server
+> Inspired by [OpenAPI Fetch](https://www.npmjs.com/package/openapi-fetch), but specifically adapted for Angular's `HttpClient`.
 
-To start a local development server, run:
+## Features
 
-```bash
-ng serve
-```
+- **Type-safe** requests and responses
+- **Path parameter** validation
+- **Autocompletion** for API endpoints
+- **Angular DI** ready (uses `HttpClient` under the hood)
+- Lightweight **proxy interface** to `HttpClient`
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Installation
 
 ```bash
-ng generate component component-name
+npm install openapi-angular
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Usage
+
+1. First, generate your OpenAPI types using openapi-typescript:
 
 ```bash
-ng generate --help
+npx openapi-typescript ./path-to-your-schema.yaml -o ./src/app/shared/api/types.ts
 ```
 
-## Building
+1. Create your service:
 
-To build the project run:
+```ts
+import { openapiClient } from 'openapi-angular';
+import { paths } from './my-openapi-3-schema'; // generated types
 
-```bash
-ng build
+@Injectable({ providedIn: 'root' })
+export class BlogService {
+  private readonly client = openapiClient<paths>({
+    baseUrl: 'https://myapi.dev/v1/',
+  });
+
+  // Get a post with type-safe params and response
+  getPost(postId: string) {
+    return this.client.get('/blogposts/{post_id}', {
+      params: {
+        path: { post_id: postId }, // ✅ Type-checked path params
+        query: { version: 2 }, // ✅ Type-checked query params
+      },
+    });
+    // Returns Observable<{ title: string; content: string }>
+  }
+
+  // Create a post with type-safe body
+  createPost(title: string, content: string) {
+    return this.client.post('/blogposts', {
+      title,
+      content,
+      publishedAt: new Date().toISOString(),
+    });
+    // Returns Observable<{ id: string; title: string }>
+  }
+}
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Key Differences from HttpClient
 
-## Running unit tests
+1. Path-based URLs: Specify OpenAPI paths instead of full URLs
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+```ts
+// Instead of:
+http.get('https://myapi.dev/v1/blogposts/123');
 
-```bash
-ng test
+// You write:
+client.get('/blogposts/{post_id}', {
+  baseUrl: 'https://myapi.dev/v1/',
+  params: { path: { post_id: '123' } },
+});
 ```
 
-## Running end-to-end tests
+2. Structured Params: All parameters are organized by type:
 
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
+```ts
+{
+  params: {
+    path: { post_id: string },
+    query: { version?: number },
+    header: { 'X-Request-ID': string }
+  }
+}
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+3. Base URL Management: Set a default but override per-request:
 
-## Additional Resources
+```ts
+// Set default:
+const client = openapiClient({ baseUrl: 'https://api.example.com/v1' });
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+// Override:
+client.get('/endpoint', { baseUrl: 'https://backup.example.com' });
+```
+
+4. Response Typing: Automatic typing for application/json responses
+
+## Error Handling
+
+The client provides proper typing for successful responses, but you should handle errors:
+
+```ts
+this.blogService.getPost('123').pipe(
+  catchError((error: HttpErrorResponse) => {
+    console.error('API Error:', error);
+    return throwError(() => new Error('Failed to load post'));
+  }),
+);
+```
+
+## Limitations
+
+- ❌ No support for JSONP requests
+
+- ❌ Cookie parameters not yet implemented
+
+- ❌ Non-JSON response bodies lose type safety (use responseType options carefully)
+
+## Best Practices
+
+- Validate responses: Consider using zod or other validation libraries for runtime type checking
+
+- Handle errors globally: Implement an HTTP interceptor for consistent error handling
+
+## Contribution
+
+Found an issue? Want to improve the library? We welcome contributions!
+
+1. Fork the repository
+
+1. Create a feature branch
+
+1. Submit a pull request
+
+## Attribution
+
+This project is a modified version of [openapi-fetch](https://github.com/openapi-ts/openapi-typescript), adapted specifically for `openapi-angular`.
+
+Both projects are licensed under MIT.

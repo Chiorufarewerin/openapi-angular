@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { assertInInjectionContext, inject } from '@angular/core';
+import { assertInInjectionContext, inject, Injector } from '@angular/core';
 import { HttpMethod, MediaType, PathsWithMethod } from 'openapi-typescript-helpers';
 import { OpenapiClient, OpenapiClientOptions } from '../types/openapi-client';
 import { Observable, identity } from 'rxjs';
@@ -16,7 +16,9 @@ export function openapiClient<Paths extends {}, Media extends MediaType = MediaT
   if (ngDevMode && !options?.injector) {
     assertInInjectionContext(openapiClient);
   }
-  const http = inject(HttpClient);
+
+  const injector = options?.injector ?? inject(Injector);
+  const http = injector.get(HttpClient);
 
   return new OpenapiClientImpl<Paths, Media>(http, options);
 }
