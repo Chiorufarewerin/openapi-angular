@@ -1,16 +1,27 @@
 import { describe, expect, test, vi } from 'vitest';
-import { headersToObj } from '../helpers.js';
 import type { components, paths } from './schemas/common.js';
 import { OpenapiBodySerializer, OpenapiRequest } from '../../public-api.js';
 import { HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
 import { openapiTestingClient } from '../testing.js';
 import { firstValueFrom } from 'rxjs';
+import { getHeadersIterator } from '../../lib/utils/headers.js';
 
 type Resource = components['schemas']['Resource'];
 
 const resource1: Resource = { id: 123 };
 const resource2: Resource = { id: 456 };
 const resource3: Resource = { id: 789 };
+
+function headersToObj(
+  headers: Headers | Record<string, string> | HttpHeaders,
+): Record<string, string> {
+  const iter = getHeadersIterator(headers);
+  const result: Record<string, string> = {};
+  for (const [k, v] of iter) {
+    result[k] = (Array.isArray(v) ? v[0] : v) as string;
+  }
+  return result;
+}
 
 describe('request', () => {
   describe('headers', () => {

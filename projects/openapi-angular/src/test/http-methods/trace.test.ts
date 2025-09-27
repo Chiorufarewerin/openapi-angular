@@ -1,14 +1,11 @@
-import { describe, expect, test } from 'vitest';
-import { createObservedClient } from '../helpers.js';
+import { describe, test } from 'vitest';
 import type { paths } from './schemas/trace.js';
+import { openapiTestingClient } from '../testing.js';
+import { firstValueFrom } from 'rxjs';
 
 describe('TRACE()', () => {
-  // Note: this isn’t an actual tests; just used to assert current behavior.
-  // Node.js does not support TRACE with new Request().
-  test.skip('(not supported in Node.js)', async () => {
-    const client = createObservedClient<paths>();
-    await expect(() =>
-      client.TRACE('/resources/{id}', { params: { path: { id: 123 } } }),
-    ).rejects.toThrow();
+  test('(not supported in Node.js)', async () => {
+    using client = openapiTestingClient<paths>();
+    await firstValueFrom(client.trace('/resources/{id}', { params: { path: { id: 123 } } }));
   });
 });

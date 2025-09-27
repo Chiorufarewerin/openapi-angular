@@ -1,18 +1,21 @@
-import { describe, expect, test } from "vitest";
-import { createObservedClient } from "../helpers.js";
-import type { paths } from "./schemas/patch.js";
+import { describe, expect, test } from 'vitest';
+import type { paths } from './schemas/patch.js';
+import { openapiTestingClient } from '../testing.js';
+import { firstValueFrom } from 'rxjs';
 
-describe("PATCH", () => {
-  test("sends the correct method", async () => {
-    let method = "";
-    const client = createObservedClient<paths>({}, async (req) => {
+describe('PATCH', () => {
+  test('sends the correct method', async () => {
+    let method = '';
+    using client = openapiTestingClient<paths>({}, (req) => {
       method = req.method;
-      return Response.json({});
+      return {};
     });
-    await client.PATCH("/resources/{id}", {
-      params: { path: { id: 123 } },
-      body: { name: "New name" },
-    });
-    expect(method).toBe("PATCH");
+    await firstValueFrom(
+      client.patch('/resources/{id}', {
+        params: { path: { id: 123 } },
+        body: { name: 'New name' },
+      }),
+    );
+    expect(method).toBe('PATCH');
   });
 });

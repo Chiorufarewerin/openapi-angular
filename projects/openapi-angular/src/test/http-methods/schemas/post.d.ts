@@ -120,7 +120,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            text: string;
+                            size: number;
                         };
                     };
                 };

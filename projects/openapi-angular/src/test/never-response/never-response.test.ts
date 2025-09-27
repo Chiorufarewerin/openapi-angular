@@ -1,15 +1,17 @@
 import { assertType, describe, expect, test } from 'vitest';
-import { createObservedClient } from '../helpers.js';
 import type { components, paths } from './schemas/never-response.js';
+import { firstEntryFrom, openapiTestingClient } from '../testing.js';
+import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 describe('GET', () => {
   test('sends correct method', async () => {
     let method = '';
-    const client = createObservedClient<paths>({}, async (req) => {
+    using client = openapiTestingClient<paths>({}, (req) => {
       method = req.method;
-      return Response.json({});
+      return {};
     });
-    await client.GET('/posts');
+    await firstEntryFrom(client.get('/posts'));
     expect(method).toBe('GET');
   });
 
@@ -20,22 +22,29 @@ describe('GET', () => {
     };
 
     let actualPathname = '';
-    const client = createObservedClient<paths>({}, async (req) => {
+    using client = openapiTestingClient<paths>({}, (req) => {
       actualPathname = new URL(req.url).pathname;
-      return Response.json(mockData);
+      return { body: mockData };
     });
 
-    const { data, error, response } = await client.GET('/posts/{id}', {
-      params: { path: { id: 123 } },
-    });
+    const { data: response, error } = await firstEntryFrom(
+      client.get('/posts/{id}', {
+        params: { path: { id: 123 } },
+        observe: 'response',
+      }),
+    );
 
-    assertType<typeof mockData | undefined>(data);
+    if (!response) {
+      throw Error('Response should be created');
+    }
+
+    assertType<typeof mockData | undefined | null>(response.body);
 
     // assert correct URL was called
     expect(actualPathname).toBe('/posts/123');
 
     // assert correct data was returned
-    expect(data).toEqual(mockData);
+    expect(response.body).toEqual(mockData);
     expect(response.status).toBe(200);
 
     // assert error is empty
@@ -44,22 +53,30 @@ describe('GET', () => {
 
   test('sends correct options, returns undefined on 204', async () => {
     let actualPathname = '';
-    const client = createObservedClient<paths>({}, async (req) => {
+    using client = openapiTestingClient<paths>({}, (req) => {
       actualPathname = new URL(req.url).pathname;
-      return new Response(null, { status: 204 });
+      return { body: null, status: 204 };
     });
 
-    const { data, error, response } = await client.GET('/posts/{id}', {
-      params: { path: { id: 123 } },
-    });
+    const { data: response, error } = await firstEntryFrom(
+      client.get('/posts/{id}', {
+        params: { path: { id: 123 } },
+        observe: 'response',
+      }),
+    );
 
-    assertType<components['schemas']['Post'] | undefined>(data);
+    if (!response) {
+      throw Error('Response should be created');
+    }
+
+    assertType<components['schemas']['Post'] | undefined | null>(response.body);
 
     // assert correct URL was called
     expect(actualPathname).toBe('/posts/123');
 
-    // assert 204 to be transformed to be undefined
-    expect(data).toEqual(undefined);
+    // assert 204 to be transformed to be null
+    // BEHAVIOR CHANGED undefined to null
+    expect(response.body).toBe(null);
     expect(response.status).toBe(204);
 
     // assert error is empty
@@ -71,17 +88,24 @@ describe('GET', () => {
 
     let method = '';
     let actualPathname = '';
-    const client = createObservedClient<paths>({}, async (req) => {
+    using client = openapiTestingClient<paths>({}, (req) => {
       method = req.method;
       actualPathname = new URL(req.url).pathname;
-      return Response.json(mockError, { status: 404 });
+      return { body: mockError, status: 404 };
     });
 
-    const { data, error, response } = await client.GET('/posts/{id}', {
-      params: { path: { id: 123 } },
-    });
+    const { data, error } = await firstEntryFrom(
+      client.get('/posts/{id}', {
+        params: { path: { id: 123 } },
+      }),
+    );
 
-    assertType<typeof mockError | undefined>(error);
+    if (!(error instanceof HttpErrorResponse)) {
+      throw Error('Incorrect error');
+    }
+
+    // BEHAVIOR CHANGED errors are untyped
+    // assertType<typeof mockError | undefined>(error);
 
     // assert correct URL was called
     expect(actualPathname).toBe('/posts/123');
@@ -90,17 +114,17 @@ describe('GET', () => {
     expect(method).toBe('GET');
 
     // assert correct error was returned
-    expect(error).toEqual(mockError);
-    expect(response.status).toBe(404);
+    expect(error.error).toEqual(mockError);
+    expect(error.status).toBe(404);
 
     // assert data is empty
     expect(data).toBeUndefined();
   });
 
   test('handles array-type responses', async () => {
-    const client = createObservedClient<paths>({}, async () => Response.json([]));
+    using client = openapiTestingClient<paths>({}, () => ({ body: [] }));
 
-    const { data } = await client.GET('/posts', { params: {} });
+    const data = await firstValueFrom(client.get('/posts', { params: {} }));
     if (!data) {
       throw new Error('data empty');
     }
@@ -112,13 +136,13 @@ describe('GET', () => {
   test('handles empty-array-type 204 response', async () => {
     let method = '';
     let actualPathname = '';
-    const client = createObservedClient<paths>({}, async (req) => {
+    using client = openapiTestingClient<paths>({}, (req) => {
       method = req.method;
       actualPathname = new URL(req.url).pathname;
-      return new Response(null, { status: 204 });
+      return { body: null, status: 204 };
     });
 
-    const { data } = await client.GET('/posts', { params: {} });
+    const data = await firstValueFrom(client.get('/posts', { params: {} }));
 
     assertType<components['schemas']['Post'][] | unknown[] | undefined>(data);
 
@@ -128,19 +152,21 @@ describe('GET', () => {
     // assert correct method was called
     expect(method).toBe('GET');
 
-    // assert 204 to be transformed to undefined
-    expect(data).toEqual(undefined);
+    // assert 204 to be transformed to null
+    // BEHAVIOR CHANGED undefined to null
+    expect(data).toBe(null);
   });
 
   test('gracefully handles invalid JSON for errors', async () => {
-    const client = createObservedClient<paths>(
-      {},
-      async () => new Response('Unauthorized', { status: 401 }),
-    );
+    using client = openapiTestingClient<paths>({}, () => ({ body: 'Unauthorized', status: 401 }));
 
-    const { data, error } = await client.GET('/posts');
+    const { data, error } = await firstEntryFrom(client.get('/posts'));
+
+    if (!(error instanceof HttpErrorResponse)) {
+      throw Error('Incorrect error');
+    }
 
     expect(data).toBeUndefined();
-    expect(error).toBe('Unauthorized');
+    expect(error.error).toBe('Unauthorized');
   });
 });

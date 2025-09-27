@@ -1,5 +1,4 @@
 import { assertType, test } from 'vitest';
-import { createObservedClient } from '../helpers.js';
 import type { paths as GitHub } from './schemas/github.js';
 import type { paths as Stripe } from './schemas/stripe.js';
 import { firstEntryFrom, openapiTestingClient } from '../testing.js';

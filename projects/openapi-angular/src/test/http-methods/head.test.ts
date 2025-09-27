@@ -1,27 +1,34 @@
 import { describe, expect, test } from 'vitest';
-import { createObservedClient } from '../helpers.js';
 import type { paths } from './schemas/head.js';
+import { openapiTestingClient } from '../testing.js';
+import { HttpHeaders } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 describe('HEAD', () => {
   test('sends the correct method', async () => {
     let method = '';
-    const client = createObservedClient<paths>({}, async (req) => {
+    using client = openapiTestingClient<paths>({}, (req) => {
       method = req.method;
-      return new Response(null, { headers: { 'Content-Length': '0' } });
+      return {
+        headers: new HttpHeaders({ 'Content-Length': '0' }),
+      };
     });
-    await client.HEAD('/resources/{id}', { params: { path: { id: 123 } } });
+    await firstValueFrom(client.head('/resources/{id}', { params: { path: { id: 123 } } }));
     expect(method).toBe('HEAD');
   });
 
   test('handles HEAD requests with non-zero Content-Length without parsing the body', async () => {
-    const client = createObservedClient<paths>({}, async () => {
-      return new Response(null, {
-        headers: { 'Content-Length': '42', 'Content-Type': 'application/json' },
-        status: 200,
-      });
+    using client = openapiTestingClient<paths>({}, () => {
+      return {
+        headers: new HttpHeaders({ 'Content-Length': '42', 'Content-Type': 'application/json' }),
+      };
     });
-    const result = await client.HEAD('/resources/{id}', { params: { path: { id: 123 } } });
-    expect(result.data).toBeUndefined();
-    expect(result.response.ok).toBe(true);
+    const response = await firstValueFrom(
+      client.head('/resources/{id}', { params: { path: { id: 123 } }, observe: 'response' }),
+    );
+
+    // BEHAVIOR CHANGED undefined to null
+    expect(response.body).toBe(null);
+    expect(response.ok).toBe(true);
   });
 });

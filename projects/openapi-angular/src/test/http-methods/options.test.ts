@@ -1,15 +1,17 @@
-import { describe, expect, test } from "vitest";
-import { createObservedClient } from "../helpers.js";
-import type { paths } from "./schemas/options.js";
+import { firstValueFrom } from 'rxjs';
+import { describe, expect, test } from 'vitest';
+import type { paths } from './schemas/options.js';
+import { openapiTestingClient } from '../testing.js';
+import { HttpHeaders } from '@angular/common/http';
 
-describe("OPTIONS", () => {
-  test("sends the correct method", async () => {
-    let method = "";
-    const client = createObservedClient<paths>({}, async (req) => {
+describe('OPTIONS', () => {
+  test('sends the correct method', async () => {
+    let method = '';
+    using client = openapiTestingClient<paths>({}, (req) => {
       method = req.method;
-      return new Response("", { headers: { Allow: "OPTIONS, GET, HEAD, POST" }, status: 200 });
+      return { headers: new HttpHeaders({ Allow: 'OPTIONS, GET, HEAD, POST' }) };
     });
-    await client.OPTIONS("/resources", { parseAs: "text" });
-    expect(method).toBe("OPTIONS");
+    await firstValueFrom(client.options('/resources', { parseAs: 'text' }));
+    expect(method).toBe('OPTIONS');
   });
 });
