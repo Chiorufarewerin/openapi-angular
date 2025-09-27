@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "copy-files": "cp README.md dist/openapi-angular && cp LICENSE dist/openapi-angular",
+    "publish": "ng build openapi-angular --configuration production && npm run copy-files && npm publish ./dist/openapi-angular"
   },
   "prettier": {
     "printWidth": 100,
