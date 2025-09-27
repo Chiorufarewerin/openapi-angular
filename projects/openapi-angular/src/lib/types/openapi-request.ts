@@ -44,7 +44,7 @@ export type OpenapiRequestCommonOptions<T> = {
 };
 
 export type OpenapiHttpRequestOptions = {
-  headers: HttpHeaders | Record<string, string | string[]>;
+  headers?: HttpHeaders | Record<string, string | string[]>;
   context?: HttpContext;
   reportProgress?: boolean;
   withCredentials?: boolean;
@@ -59,4 +59,5 @@ export type OpenapiHttpRequestOptions = {
   transferCache?: { includeHeaders?: string[] } | boolean;
   timeout?: number;
   responseType?: 'json';
+  observe?: 'body' | 'response';
 };

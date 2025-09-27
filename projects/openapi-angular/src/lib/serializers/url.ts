@@ -1,4 +1,4 @@
-import { OpenapiQuerySerializer } from '../models/openapi-serializer';
+import { OpenapiQuerySerializer } from '../types/openapi-serializer';
 import { defaultPathSerializer } from './path';
 
 export function createFinalURL<O>(
