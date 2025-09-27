@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: openapi-fetch
-  version: "1.0"
+  version: '1.0'
 paths:
   /resources:
     put:
@@ -17,13 +17,13 @@ paths:
                 name:
                   type: string
       responses:
-        "200":
+        '200':
           description: OK
           operationId: createResource
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Resource"
+                $ref: '#/components/schemas/Resource'
 components:
   schemas:
     Resource:

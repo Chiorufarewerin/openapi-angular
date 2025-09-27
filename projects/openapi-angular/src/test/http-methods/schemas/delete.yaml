@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: openapi-fetch
-  version: "1.0"
+  version: '1.0'
 paths:
   /tags/{name}:
     delete:
@@ -18,7 +18,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
 components:
   schemas:
     Error:

@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: openapi-fetch
-  version: "1.0"
+  version: '1.0'
 paths:
   /posts:
     get:
@@ -14,13 +14,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Post"
+                  $ref: '#/components/schemas/Post'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
   /posts/{id}:
     parameters:
       - name: id
@@ -36,13 +36,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Post"
+                $ref: '#/components/schemas/Post'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
 components:
   schemas:
     Error:

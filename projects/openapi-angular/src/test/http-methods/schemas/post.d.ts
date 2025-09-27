@@ -4,194 +4,194 @@
  */
 
 export interface paths {
-    "/posts": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: components["requestBodies"]["CreatePost"];
-            responses: {
-                201: components["responses"]["CreatePost"];
-                500: components["responses"]["Error"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+  '/posts': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/posts-optional": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: components["requestBodies"]["CreatePostOptional"];
-            responses: {
-                201: components["responses"]["CreatePost"];
-                500: components["responses"]["Error"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: components['requestBodies']['CreatePost'];
+      responses: {
+        201: components['responses']['CreatePost'];
+        500: components['responses']['Error'];
+      };
     };
-    "/posts-optional-inline": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["Post"];
-                };
-            };
-            responses: {
-                201: components["responses"]["CreatePost"];
-                500: components["responses"]["Error"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/posts-optional': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/multipart-form-data-file-upload": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "multipart/form-data": string;
-                };
-            };
-            responses: {
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            size: number;
-                        };
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: components['requestBodies']['CreatePostOptional'];
+      responses: {
+        201: components['responses']['CreatePost'];
+        500: components['responses']['Error'];
+      };
     };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/posts-optional-inline': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: {
+        content: {
+          'application/json': components['schemas']['Post'];
+        };
+      };
+      responses: {
+        201: components['responses']['CreatePost'];
+        500: components['responses']['Error'];
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/multipart-form-data-file-upload': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'multipart/form-data': string;
+        };
+      };
+      responses: {
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': {
+              size: number;
+            };
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: {
-        Error: {
-            code: number;
-            message: string;
-        };
-        Post: {
-            title: string;
-            body: string;
-            publish_date?: number;
-        };
+  schemas: {
+    Error: {
+      code: number;
+      message: string;
     };
-    responses: {
-        CreatePost: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": {
-                    status: string;
-                };
-            };
-        };
-        Error: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": {
-                    code: number;
-                    message: string;
-                };
-            };
-        };
+    Post: {
+      title: string;
+      body: string;
+      publish_date?: number;
     };
-    parameters: never;
-    requestBodies: {
-        CreatePost: {
-            content: {
-                "application/json": {
-                    title: string;
-                    body: string;
-                    publish_date: number;
-                };
-            };
+  };
+  responses: {
+    CreatePost: {
+      headers: {
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': {
+          status: string;
         };
-        CreatePostOptional: {
-            content: {
-                "application/json": {
-                    title: string;
-                    body: string;
-                    publish_date: number;
-                };
-            };
-        };
+      };
     };
-    headers: never;
-    pathItems: never;
+    Error: {
+      headers: {
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': {
+          code: number;
+          message: string;
+        };
+      };
+    };
+  };
+  parameters: never;
+  requestBodies: {
+    CreatePost: {
+      content: {
+        'application/json': {
+          title: string;
+          body: string;
+          publish_date: number;
+        };
+      };
+    };
+    CreatePostOptional: {
+      content: {
+        'application/json': {
+          title: string;
+          body: string;
+          publish_date: number;
+        };
+      };
+    };
+  };
+  headers: never;
+  pathItems: never;
 }
 export type $defs = Record<string, never>;
 export type operations = Record<string, never>;

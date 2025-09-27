@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: openapi-fetch
-  version: "1.0"
+  version: '1.0'
 paths:
   /resources:
     options:

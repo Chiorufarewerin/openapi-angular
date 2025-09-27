@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: openapi-fetch
-  version: "1.0"
+  version: '1.0'
 paths:
   /resources/{id}:
     parameters:
@@ -26,13 +26,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Resource"
+                $ref: '#/components/schemas/Resource'
         default:
           description: Error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
 components:
   schemas:
     Error:

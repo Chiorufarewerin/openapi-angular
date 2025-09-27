@@ -1,38 +1,38 @@
 openapi: 3.1.0
 info:
   title: openapi-fetch
-  version: "1.0"
+  version: '1.0'
 paths:
   /posts:
     post:
       requestBody:
-        $ref: "#/components/requestBodies/CreatePost"
+        $ref: '#/components/requestBodies/CreatePost'
       responses:
         201:
-          $ref: "#/components/responses/CreatePost"
+          $ref: '#/components/responses/CreatePost'
         500:
-          $ref: "#/components/responses/Error"
+          $ref: '#/components/responses/Error'
   /posts-optional:
     post:
       requestBody:
-        $ref: "#/components/requestBodies/CreatePostOptional"
+        $ref: '#/components/requestBodies/CreatePostOptional'
       responses:
         201:
-          $ref: "#/components/responses/CreatePost"
+          $ref: '#/components/responses/CreatePost'
         500:
-          $ref: "#/components/responses/Error"
+          $ref: '#/components/responses/Error'
   /posts-optional-inline:
     post:
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Post"
+              $ref: '#/components/schemas/Post'
       responses:
         201:
-          $ref: "#/components/responses/CreatePost"
+          $ref: '#/components/responses/CreatePost'
         500:
-          $ref: "#/components/responses/Error"
+          $ref: '#/components/responses/Error'
   /multipart-form-data-file-upload:
     post:
       requestBody:
