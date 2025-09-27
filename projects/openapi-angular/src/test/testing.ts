@@ -1,6 +1,8 @@
 import {
   HttpBackend,
+  HttpErrorResponse,
   HttpEvent,
+  HttpHeaders,
   HttpRequest,
   HttpResponse,
   provideHttpClient,
@@ -9,9 +11,17 @@ import { inject, InjectionToken, Injector, provideZonelessChangeDetection } from
 import { TestBed } from '@angular/core/testing';
 import { MediaType } from 'openapi-typescript-helpers';
 import { OpenapiClient, openapiClient, OpenapiClientOptions } from '../public-api';
-import { Observable, of } from 'rxjs';
+import { firstValueFrom, Observable, of, throwError } from 'rxjs';
 
-type OnRequestFn = (input: HttpRequest<unknown>) => HttpResponse<unknown>;
+type ResponseData<T> = {
+  body?: T | null;
+  headers?: HttpHeaders;
+  status?: number;
+  statusText?: string;
+  url?: string;
+  redirected?: boolean;
+};
+type OnRequestFn = (input: HttpRequest<unknown>) => ResponseData<unknown>;
 
 const OPENAPI_ON_REQUEST = new InjectionToken<OnRequestFn>('OPENAPI_ON_REQUEST');
 
@@ -19,13 +29,19 @@ class OpenapiProxyBackend implements HttpBackend {
   private readonly onRequest = inject(OPENAPI_ON_REQUEST);
 
   handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-    return of(this.onRequest(req));
+    const { body, ...rest } = this.onRequest(req);
+    // ok determines whether the response will be transmitted on the event or error channel.
+    const ok = !rest.status || (rest.status >= 200 && rest.status < 300);
+
+    return ok
+      ? of(new HttpResponse({ body, ...rest }))
+      : throwError(() => new HttpErrorResponse({ error: body, ...rest }));
   }
 }
 
 export function openapiTestingClient<Paths extends {}, Media extends MediaType = MediaType>(
   options?: OpenapiClientOptions,
-  onRequest: (input: HttpRequest<unknown>) => HttpResponse<unknown> = () => new HttpResponse(),
+  onRequest: OnRequestFn = () => ({}),
 ): OpenapiClient<Paths, Media> & { [Symbol.dispose]: () => void } {
   TestBed.configureTestingModule({
     providers: [
@@ -47,4 +63,14 @@ export function openapiTestingClient<Paths extends {}, Media extends MediaType =
   };
 
   return client as any;
+}
+
+export async function firstEntryFrom<T>(
+  source: Observable<T>,
+): Promise<{ data: T; error?: never } | { data?: never; error: unknown }> {
+  try {
+    return { data: await firstValueFrom(source) };
+  } catch (error: unknown) {
+    return { error };
+  }
 }

@@ -1,7 +1,8 @@
 import { assertType, describe, expect, test } from 'vitest';
 import type { components, paths } from './schemas/common.js';
-import { createObservedClient } from '../helpers.js';
 import { OpenapiQuerySerializerOptions } from '../../public-api.js';
+import { openapiTestingClient } from '../testing.js';
+import { firstValueFrom } from 'rxjs';
 
 type Resource = components['schemas']['Resource'];
 
@@ -12,76 +13,98 @@ const resource3: Resource = { id: 789 };
 describe('params', () => {
   describe('path', () => {
     test('typechecks', async () => {
-      const client = createObservedClient<paths>({}, async (req) => {
+      using client = openapiTestingClient<paths>({}, (req) => {
         const found = [resource1, resource2, resource3].find(
           (post) => String(post.id) === req.url.split('/resources/')[1],
         );
-        return found
-          ? Response.json(found)
-          : Response.json({ code: 404, message: 'Not found' }, { status: 404 });
+        return found ? { body: found } : { body: { code: 404, message: 'Not found' }, status: 404 };
       });
 
       // assert missing options throws error
-      await client
-        // @ts-expect-error
-        .GET('/resources/{id}');
+      await expect(
+        firstValueFrom(
+          client
+            // @ts-expect-error
+            .get('/resources/{id}'),
+        ),
+      ).rejects.toThrowError();
 
       // assert missing options.params throws error
-      await client
-        // @ts-expect-error
-        .GET('/resources/{id}', {});
+      await expect(
+        firstValueFrom(
+          client
+            // @ts-expect-error
+            .get('/resources/{id}', {}),
+        ),
+      ).rejects.toThrowError();
 
       // assert missing path params throws error
-      await client.GET('/resources/{id}', {
-        // @ts-expect-error
-        params: {},
-      });
+      await expect(
+        firstValueFrom(
+          client.get('/resources/{id}', {
+            // @ts-expect-error
+            params: {},
+          }),
+        ),
+      ).rejects.toThrowError();
 
       // assert empty paths object throws error
-      await client.GET('/resources/{id}', {
-        params: {
-          // @ts-expect-error
-          path: {},
-        },
-      });
+      await expect(
+        firstValueFrom(
+          client.get('/resources/{id}', {
+            params: {
+              // @ts-expect-error
+              path: {},
+            },
+          }),
+        ),
+      ).rejects.toThrowError();
 
       // assert right name, mismatched type throws error
-      await client.GET('/resources/{id}', {
-        params: {
-          path: {
-            // @ts-expect-error
-            id: '123',
+      await firstValueFrom(
+        client.get('/resources/{id}', {
+          params: {
+            path: {
+              // @ts-expect-error
+              id: '123',
+            },
           },
-        },
-      });
+        }),
+      );
 
       // assert right name, right type passes
-      const result = await client.GET('/resources/{id}', { params: { path: { id: 456 } } });
-      expect(result.data).toEqual(resource2);
+      const result = await firstValueFrom(
+        client.get('/resources/{id}', { params: { path: { id: 456 } } }),
+      );
+      expect(result).toEqual(resource2);
     });
 
     test('typechecks (empty path params)', async () => {
-      const client = createObservedClient<paths>({}, async () =>
-        Response.json([resource1, resource2, resource3]),
-      );
+      using client = openapiTestingClient<paths>({}, () => ({
+        body: [resource1, resource2, resource3],
+      }));
 
       // assert unneeded path params throws type error
-      await client.GET('/resources', {
-        params: {
-          // @ts-expect-error
-          path: { id: 123 },
-        },
-      });
+      await firstValueFrom(
+        client.get('/resources', {
+          params: {
+            // @ts-expect-error
+            path: { id: 123 },
+          },
+        }),
+      );
 
       // assert even empty objects throw type error
-      await client.GET('/resources', {
-        params: {
-          // @ts-expect-error
-          path: {},
-        },
-      });
+      await firstValueFrom(
+        client.get('/resources', {
+          params: {
+            // @ts-expect-error
+            path: {},
+          },
+        }),
+      );
 
-      const { data } = await client.GET('/resources');
+      const data = await firstValueFrom(client.get('/resources'));
 
       // assert data matches expected type
       if (data) {
@@ -96,34 +119,36 @@ describe('params', () => {
     test('serializes', async () => {
       const baseUrl = 'https://fakeurl.example';
       let actualPathname = '';
-      const client = createObservedClient<paths>({ baseUrl }, async (req) => {
+      using client = openapiTestingClient<paths>({ baseUrl }, (req) => {
         actualPathname = new URL(req.url).pathname;
-        return Response.json({});
+        return {};
       });
 
-      await client.GET(
-        '/path-params/{simple_primitive}/{simple_obj_flat}/{simple_arr_flat}/{simple_obj_explode*}/{simple_arr_explode*}/{.label_primitive}/{.label_obj_flat}/{.label_arr_flat}/{.label_obj_explode*}/{.label_arr_explode*}/{;matrix_primitive}/{;matrix_obj_flat}/{;matrix_arr_flat}/{;matrix_obj_explode*}/{;matrix_arr_explode*}',
-        {
-          params: {
-            path: {
-              simple_primitive: 'simple',
-              simple_obj_flat: { a: 'b', c: 'd' },
-              simple_arr_flat: [1, 2, 3],
-              simple_obj_explode: { e: 'f', g: 'h' },
-              simple_arr_explode: [4, 5, 6],
-              label_primitive: 'label',
-              label_obj_flat: { a: 'b', c: 'd' },
-              label_arr_flat: [1, 2, 3],
-              label_obj_explode: { e: 'f', g: 'h' },
-              label_arr_explode: [4, 5, 6],
-              matrix_primitive: 'matrix',
-              matrix_obj_flat: { a: 'b', c: 'd' },
-              matrix_arr_flat: [1, 2, 3],
-              matrix_obj_explode: { e: 'f', g: 'h' },
-              matrix_arr_explode: [4, 5, 6],
+      await firstValueFrom(
+        client.get(
+          '/path-params/{simple_primitive}/{simple_obj_flat}/{simple_arr_flat}/{simple_obj_explode*}/{simple_arr_explode*}/{.label_primitive}/{.label_obj_flat}/{.label_arr_flat}/{.label_obj_explode*}/{.label_arr_explode*}/{;matrix_primitive}/{;matrix_obj_flat}/{;matrix_arr_flat}/{;matrix_obj_explode*}/{;matrix_arr_explode*}',
+          {
+            params: {
+              path: {
+                simple_primitive: 'simple',
+                simple_obj_flat: { a: 'b', c: 'd' },
+                simple_arr_flat: [1, 2, 3],
+                simple_obj_explode: { e: 'f', g: 'h' },
+                simple_arr_explode: [4, 5, 6],
+                label_primitive: 'label',
+                label_obj_flat: { a: 'b', c: 'd' },
+                label_arr_flat: [1, 2, 3],
+                label_obj_explode: { e: 'f', g: 'h' },
+                label_arr_explode: [4, 5, 6],
+                matrix_primitive: 'matrix',
+                matrix_obj_flat: { a: 'b', c: 'd' },
+                matrix_arr_flat: [1, 2, 3],
+                matrix_obj_explode: { e: 'f', g: 'h' },
+                matrix_arr_explode: [4, 5, 6],
+              },
             },
           },
-        },
+        ),
       );
 
       expect(actualPathname).toBe(
@@ -152,14 +177,16 @@ describe('params', () => {
 
     test('escapes reserved characters in path segment', async () => {
       let actualPathname = '';
-      const client = createObservedClient<paths>({}, async (req) => {
+      using client = openapiTestingClient<paths>({}, (req) => {
         actualPathname = new URL(req.url).pathname;
-        return Response.json({ success: true });
+        return { body: { success: true } };
       });
 
-      await client.GET('/path-params/{string}', {
-        params: { path: { string: ';/?:@&=+$,# ' } },
-      });
+      await firstValueFrom(
+        client.get('/path-params/{string}', {
+          params: { path: { string: ';/?:@&=+$,# ' } },
+        }),
+      );
 
       // expect post_id to be encoded properly
       expect(actualPathname).toBe('/path-params/%3B%2F%3F%3A%40%26%3D%2B%24%2C%23%20');
@@ -167,16 +194,18 @@ describe('params', () => {
 
     test('does not escape allowed characters in path segment', async () => {
       let actualPathname = '';
-      const client = createObservedClient<paths>({}, async (req) => {
+      using client = openapiTestingClient<paths>({}, (req) => {
         actualPathname = new URL(req.url).pathname;
-        return Response.json({ success: true });
+        return { body: { success: true } };
       });
 
       const value = "aAzZ09-_.!~*'()";
 
-      await client.GET('/path-params/{string}', {
-        params: { path: { string: value } },
-      });
+      await firstValueFrom(
+        client.get('/path-params/{string}', {
+          params: { path: { string: value } },
+        }),
+      );
 
       // expect post_id to stay unchanged
       expect(actualPathname).toBe(`/path-params/${value}`);
@@ -184,13 +213,15 @@ describe('params', () => {
 
     test('allows UTF-8 characters', async () => {
       let actualPathname = '';
-      const client = createObservedClient<paths>({}, async (req) => {
+      using client = openapiTestingClient<paths>({}, (req) => {
         actualPathname = new URL(req.url).pathname;
-        return Response.json({ success: true });
+        return { body: { success: true } };
       });
-      await client.GET('/path-params/{string}', {
-        params: { path: { string: '🥴' } },
-      });
+      await firstValueFrom(
+        client.get('/path-params/{string}', {
+          params: { path: { string: '🥴' } },
+        }),
+      );
 
       // expect post_id to be encoded properly
       expect(actualPathname).toBe('/path-params/%F0%9F%A5%B4');
@@ -198,43 +229,52 @@ describe('params', () => {
   });
 
   describe('header', () => {
-    // BEHAVIOR CHANGED. SOmething wrong with headers???
-    test.skip('per-request', async () => {
-      const client = createObservedClient<paths>({}, async (req) => {
-        console.log('HEADERS', req.headers);
-
+    test('per-request', async () => {
+      using client = openapiTestingClient<paths>({}, (req) => {
         const header = req.headers.get('x-required-header');
         if (header !== 'correct') {
-          return Response.json({ code: 500, message: 'missing correct header' }, { status: 500 });
+          return {
+            body: { code: 500, message: 'missing correct header' },
+            status: 500,
+          };
         }
-        return Response.json({ status: header }, { status: 200, headers: req.headers });
+        return { body: { status: header }, status: 200, headers: req.headers };
       });
 
       // expect error on missing header
       // @ts-expect-error
-      await client.GET('/header-params');
+      await expect(firstValueFrom(client.get('/header-params'))).rejects.toThrowError();
 
       // expect error on incorrect header
-      await client.GET('/header-params', {
-        // @ts-expect-error
-        params: { header: { foo: 'bar' } },
-      });
+      await expect(
+        firstValueFrom(
+          client.get('/header-params', {
+            // @ts-expect-error
+            params: { header: { foo: 'bar' } },
+          }),
+        ),
+      ).rejects.toThrowError();
 
       // expect error on mismatched type
-      await client.GET('/header-params', {
-        // @ts-expect-error
-        params: { header: { 'x-required-header': true } },
-      });
+      await expect(
+        firstValueFrom(
+          client.get('/header-params', {
+            // @ts-expect-error
+            params: { header: { 'x-required-header': true } },
+          }),
+        ),
+      ).rejects.toThrowError();
 
       // (no error)
-      const response = await client.GET('/header-params', {
-        params: { header: { 'x-required-header': 'correct' } },
-      });
-
-      console.log('HEADERS', response.response);
+      const response = await firstValueFrom(
+        client.get('/header-params', {
+          params: { header: { 'x-required-header': 'correct' } },
+          observe: 'response',
+        }),
+      );
 
       // expect param passed correctly
-      expect(response.response.headers.get('x-required-header')).toBe('correct');
+      expect(response.headers.get('x-required-header')).toBe('correct');
     });
   });
 
@@ -242,32 +282,36 @@ describe('params', () => {
     describe('querySerializer', () => {
       test('primitives', async () => {
         let actualURL = new URL('https://fakeurl.example');
-        const client = createObservedClient<paths>({}, async (req) => {
+        using client = openapiTestingClient<paths>({}, (req) => {
           actualURL = new URL(req.url);
-          return Response.json({});
+          return {};
         });
 
-        await client.GET('/query-params', {
-          params: {
-            query: { string: 'string', number: 0, boolean: false },
-          },
-        });
+        await firstValueFrom(
+          client.get('/query-params', {
+            params: {
+              query: { string: 'string', number: 0, boolean: false },
+            },
+          }),
+        );
 
         expect(actualURL.search).toBe('?string=string&number=0&boolean=false');
       });
 
       test('array params (empty)', async () => {
         let actualURL = new URL('https://fakeurl.example');
-        const client = createObservedClient<paths>({}, async (req) => {
+        using client = openapiTestingClient<paths>({}, (req) => {
           actualURL = new URL(req.url);
-          return Response.json({});
+          return {};
         });
 
-        await client.GET('/query-params', {
-          params: {
-            query: { array: [] },
-          },
-        });
+        await firstValueFrom(
+          client.get('/query-params', {
+            params: {
+              query: { array: [] },
+            },
+          }),
+        );
 
         expect(actualURL.pathname).toBe('/query-params');
         expect(actualURL.search).toBe('');
@@ -275,16 +319,18 @@ describe('params', () => {
 
       test('array params (empty, multiple)', async () => {
         let actualURL = new URL('https://fakeurl.example');
-        const client = createObservedClient<paths>({}, async (req) => {
+        using client = openapiTestingClient<paths>({}, (req) => {
           actualURL = new URL(req.url);
-          return Response.json({});
+          return {};
         });
 
-        await client.GET('/query-params', {
-          params: {
-            query: { array: [], second_array: [], third_array: [] },
-          },
-        });
+        await firstValueFrom(
+          client.get('/query-params', {
+            params: {
+              query: { array: [], second_array: [], third_array: [] },
+            },
+          }),
+        );
 
         expect(actualURL.pathname).toBe('/query-params');
         expect(actualURL.search).toBe('');
@@ -292,16 +338,18 @@ describe('params', () => {
 
       test('empty/null params', async () => {
         let actualURL = new URL('https://fakeurl.example');
-        const client = createObservedClient<paths>({}, async (req) => {
+        using client = openapiTestingClient<paths>({}, (req) => {
           actualURL = new URL(req.url);
-          return Response.json({});
+          return {};
         });
 
-        await client.GET('/query-params', {
-          params: {
-            query: { string: undefined, number: null as any },
-          },
-        });
+        await firstValueFrom(
+          client.get('/query-params', {
+            params: {
+              query: { string: undefined, number: null as any },
+            },
+          }),
+        );
 
         expect(actualURL.pathname).toBe('/query-params');
         expect(actualURL.search).toBe('');
@@ -359,21 +407,23 @@ describe('params', () => {
           },
         ][])('%s', async (_, { given, want }) => {
           let actualURL = new URL('https://fakeurl.example');
-          const client = createObservedClient<paths>(
+          using client = openapiTestingClient<paths>(
             {
               querySerializer: { array: given },
             },
-            async (req) => {
+            (req) => {
               actualURL = new URL(req.url);
-              return Response.json({});
+              return {};
             },
           );
 
-          await client.GET('/query-params', {
-            params: {
-              query: { array: ['1', '2', '3'], boolean: true },
-            },
-          });
+          await firstValueFrom(
+            client.get('/query-params', {
+              params: {
+                query: { array: ['1', '2', '3'], boolean: true },
+              },
+            }),
+          );
 
           // skip leading '?'
           expect(actualURL.search.substring(1)).toBe(want);
@@ -418,21 +468,23 @@ describe('params', () => {
           },
         ][])('%s', async (_, { given, want }) => {
           let actualURL = new URL('https://fakeurl.example');
-          const client = createObservedClient<paths>(
+          using client = openapiTestingClient<paths>(
             {
               querySerializer: { object: given },
             },
-            async (req) => {
+            (req) => {
               actualURL = new URL(req.url);
-              return Response.json({});
+              return {};
             },
           );
 
-          await client.GET('/query-params', {
-            params: {
-              query: { object: { foo: 'bar', bar: 'baz' }, boolean: true },
-            },
-          });
+          await firstValueFrom(
+            client.get('/query-params', {
+              params: {
+                query: { object: { foo: 'bar', bar: 'baz' }, boolean: true },
+              },
+            }),
+          );
 
           // skip leading '?'
           expect(actualURL.search.substring(1)).toBe(want);
@@ -441,37 +493,41 @@ describe('params', () => {
 
       test('allowReserved', async () => {
         let actualURL = new URL('https://fakeurl.example');
-        const client = createObservedClient<paths>(
+        using client = openapiTestingClient<paths>(
           {
             querySerializer: { allowReserved: true },
           },
-          async (req) => {
+          (req) => {
             actualURL = new URL(req.url);
-            return Response.json({});
+            return {};
           },
         );
 
-        await client.GET('/query-params', {
-          params: {
-            query: {
-              string: 'bad/character🐶',
+        await firstValueFrom(
+          client.get('/query-params', {
+            params: {
+              query: {
+                string: 'bad/character🐶',
+              },
             },
-          },
-        });
+          }),
+        );
 
         expect(actualURL.search).toBe('?string=bad/character%F0%9F%90%B6');
         expect(actualURL.searchParams.get('string')).toBe('bad/character🐶');
 
-        await client.GET('/query-params', {
-          params: {
-            query: {
-              string: 'bad/character🐶',
+        await firstValueFrom(
+          client.get('/query-params', {
+            params: {
+              query: {
+                string: 'bad/character🐶',
+              },
             },
-          },
-          querySerializer: {
-            allowReserved: false,
-          },
-        });
+            querySerializer: {
+              allowReserved: false,
+            },
+          }),
+        );
 
         expect(actualURL.search).toBe('?string=bad%2Fcharacter%F0%9F%90%B6');
         expect(actualURL.searchParams.get('string')).toBe('bad/character🐶');
@@ -480,22 +536,24 @@ describe('params', () => {
       describe('function', () => {
         test('global default', async () => {
           let actualURL = new URL('https://fakeurl.example');
-          const client = createObservedClient<paths>(
+          using client = openapiTestingClient<paths>(
             {
               querySerializer: (q) => `alpha=${q['version']}&beta=${q['format']}`,
             },
-            async (req) => {
+            (req) => {
               actualURL = new URL(req.url);
-              return Response.json({});
+              return {};
             },
           );
 
-          await client.GET('/resources/{id}', {
-            params: {
-              path: { id: 123 },
-              query: { version: 2, format: 'json' },
-            },
-          });
+          await firstValueFrom(
+            client.get('/resources/{id}', {
+              params: {
+                path: { id: 123 },
+                query: { version: 2, format: 'json' },
+              },
+            }),
+          );
 
           expect(`${actualURL.pathname}${actualURL.search}`).toBe(
             '/resources/123?alpha=2&beta=json',
@@ -504,23 +562,25 @@ describe('params', () => {
 
         test('per-request', async () => {
           let actualURL = new URL('https://fakeurl.example');
-          const client = createObservedClient<paths>(
+          using client = openapiTestingClient<paths>(
             {
               querySerializer: () => 'query',
             },
-            async (req) => {
+            (req) => {
               actualURL = new URL(req.url);
-              return Response.json({});
+              return {};
             },
           );
 
-          await client.GET('/resources/{id}', {
-            params: {
-              path: { id: 456 },
-              query: { version: 2, format: 'json' },
-            },
-            querySerializer: (q) => `alpha=${q.version}&beta=${q.format}`,
-          });
+          await firstValueFrom(
+            client.get('/resources/{id}', {
+              params: {
+                path: { id: 456 },
+                query: { version: 2, format: 'json' },
+              },
+              querySerializer: (q) => `alpha=${q.version}&beta=${q.format}`,
+            }),
+          );
 
           expect(`${actualURL.pathname}${actualURL.search}`).toBe(
             '/resources/456?alpha=2&beta=json',
@@ -530,21 +590,23 @@ describe('params', () => {
 
       test('ignores leading ? characters', async () => {
         let actualURL = new URL('https://fakeurl.example');
-        const client = createObservedClient<paths>(
+        using client = openapiTestingClient<paths>(
           {
             querySerializer: () => '?query',
           },
-          async (req) => {
+          (req) => {
             actualURL = new URL(req.url);
-            return Response.json({});
+            return {};
           },
         );
-        await client.GET('/resources/{id}', {
-          params: {
-            path: { id: 789 },
-            query: { version: 2, format: 'json' },
-          },
-        });
+        await firstValueFrom(
+          client.get('/resources/{id}', {
+            params: {
+              path: { id: 789 },
+              query: { version: 2, format: 'json' },
+            },
+          }),
+        );
         expect(`${actualURL.pathname}${actualURL.search}`).toBe('/resources/789?query');
       });
     });

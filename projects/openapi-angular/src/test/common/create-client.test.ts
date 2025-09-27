@@ -3,14 +3,14 @@ import { describe, expect, test } from 'vitest';
 import type { paths } from './schemas/common.js';
 import { OpenapiRequest } from '../../public-api.js';
 import { openapiTestingClient } from '../testing.js';
-import { HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 
 describe('createClient options', () => {
   test('baseUrl', async () => {
     let actualURL = new URL('https://fakeurl.example');
     using client = openapiTestingClient<paths>({ baseUrl: 'https://api.foo.bar/v2' }, (req) => {
       actualURL = new URL(req.url);
-      return new HttpResponse({ body: [] });
+      return { body: [] };
     });
     await firstValueFrom(client.get('/resources'));
     expect(actualURL.href).toBe('https://api.foo.bar/v2/resources');
@@ -20,7 +20,7 @@ describe('createClient options', () => {
     let actualURL = new URL('https://fakeurl.example');
     using client = openapiTestingClient<paths>({ baseUrl: 'https://api.foo.bar/v3/' }, (req) => {
       actualURL = new URL(req.url);
-      return new HttpResponse({ body: [] });
+      return { body: [] };
     });
     await firstValueFrom(client.get('/resources'));
     expect(actualURL.href).toBe('https://api.foo.bar/v3/resources');
@@ -30,7 +30,7 @@ describe('createClient options', () => {
     let actualURL = new URL('https://fakeurl.example');
     using client = openapiTestingClient<paths>({ baseUrl: 'https://fakeurl.example' }, (req) => {
       actualURL = new URL(req.url);
-      return new HttpResponse({ body: [] });
+      return { body: [] };
     });
 
     const localBaseUrl = 'https://api.foo.bar/v3';
@@ -44,7 +44,7 @@ describe('createClient options', () => {
     let actualURL = new URL('https://fakeurl.example');
     using client = openapiTestingClient<paths>({ baseUrl: 'https://api.foo.bar/v2/' }, (req) => {
       actualURL = new URL(req.url);
-      return new HttpResponse({ body: [] });
+      return { body: [] };
     });
 
     const localBaseUrl = 'https://api.foo.bar/v3';
@@ -71,7 +71,7 @@ describe('createClient options', () => {
       let headers!: HttpHeaders;
       using client = openapiTestingClient<any>({ headers: options.defaultHeaders }, (req) => {
         headers = req.headers;
-        return new HttpResponse({ body: [] });
+        return { body: [] };
       });
       await firstValueFrom(client[options.method]('/resources', options.fetchOptions as any));
       return headers.get('content-type');

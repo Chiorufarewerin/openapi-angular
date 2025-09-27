@@ -1,228 +1,217 @@
 import { assertType, describe, expect, expectTypeOf, test } from 'vitest';
 import type { components, paths } from './schemas/common.js';
-import { createObservedClient, OpenapiObservedClient } from '../helpers.js';
-import { OpenapiResponse } from '../../public-api.js';
-import { HttpMethod, MediaType, PathsWithMethod } from 'openapi-typescript-helpers';
+import { firstEntryFrom, openapiTestingClient } from '../testing.js';
+import { firstValueFrom } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
-type ClientPathsWithMethod<
-  CreatedClient extends OpenapiObservedClient<any, any>,
-  Method extends HttpMethod,
-> =
-  CreatedClient extends OpenapiObservedClient<infer Paths, infer _Media>
-    ? PathsWithMethod<Paths, Method>
-    : never;
-
-type MethodResponse<
-  CreatedClient extends OpenapiObservedClient<any, any>,
-  Method extends HttpMethod,
-  Path extends ClientPathsWithMethod<CreatedClient, Method>,
-  Options = {},
-> =
-  CreatedClient extends OpenapiObservedClient<
-    infer Paths extends { [key: string]: any },
-    infer Media extends MediaType
-  >
-    ? NonNullable<OpenapiResponse<Paths[Path][Method], Options, Media>>
-    : never;
 type Resource = components['schemas']['Resource'];
-type Error = components['schemas']['Error'];
 
-// BEHAVIOR CHANGED it should work
-describe.skip('response', () => {
+describe('response', () => {
   describe('data/error', () => {
     test('valid path', async () => {
-      const client = createObservedClient<paths>();
+      using client = openapiTestingClient<paths>();
 
-      const result = await client.GET('/resources');
+      const result = await firstEntryFrom(client.get('/resources'));
 
       // 1. assert data & error may be undefined initially
       assertType<Resource[] | undefined>(result.data);
-      assertType<Error | undefined>(result.error);
+      // BEHAVIOR CHANGED errors are untyped
+      // assertType<Error | undefined>(result.error);
 
       // 2. assert data is not undefined inside condition block
       if (result.data) {
         assertType<NonNullable<Resource[]>>(result.data);
         assertType<undefined>(result.error);
       }
-      // 2b. inverse should work, too
-      if (!result.error) {
-        assertType<NonNullable<Resource[]>>(result.data);
-        assertType<undefined>(result.error);
-      }
 
-      // 3. assert error is not undefined inside condition block
-      if (result.error) {
-        assertType<undefined>(result.data);
-        assertType<NonNullable<Error>>(result.error);
-      }
+      // BEHAVIOR CHANGED errors are untyped
+      // 2b. inverse should work, too
+      // if (!result.error) {
+      //   assertType<NonNullable<Resource[]>>(result.data);
+      //   assertType<undefined>(result.error);
+      // }
+
+      // // 3. assert error is not undefined inside condition block
+      // if (result.error) {
+      //   assertType<undefined>(result.data);
+      //   assertType<NonNullable<Error>>(result.error);
+      // }
       // 3b. inverse should work, too
       if (!result.data) {
         assertType<undefined>(result.data);
-        assertType<NonNullable<Error>>(result.error);
+        // BEHAVIOR CHANGED errors are untyped
+        // assertType<NonNullable<Error>>(result.error);
       }
     });
 
     test('invalid path', async () => {
-      const client = createObservedClient<paths>();
+      using client = openapiTestingClient<paths>();
 
-      const result = await client.GET(
-        // @ts-expect-error this should throw an error
-        '/not-a-real-path',
-        {},
+      const result = await firstEntryFrom(
+        client.get(
+          // @ts-expect-error this should throw an error
+          '/not-a-real-path',
+          {},
+        ),
       );
 
       //@ts-expect-error impossible to determine data type for invalid path
       assertType<never>(result.data);
-      assertType<undefined>(result.error);
+
+      // BEHAVIOR CHANGED errors are untyped
+      // assertType<undefined>(result.error);
     });
 
     test('returns union for mismatched response', async () => {
-      const client = createObservedClient<paths>();
-      const result = await client.GET('/mismatched-response');
+      using client = openapiTestingClient<paths>();
+      const result = await firstEntryFrom(client.get('/mismatched-response'));
       if (result.data) {
         expectTypeOf(result.data).toEqualTypeOf<Resource | Resource[]>();
       } else {
-        expectTypeOf(result.error)
-          .extract<{ code: number }>()
-          .toEqualTypeOf<{ code: number; message: string }>();
-        expectTypeOf(result.error).exclude<{ code: number }>().toEqualTypeOf<never>();
+        // BEHAVIOR CHANGED errors are untyped
+        // expectTypeOf(result.error)
+        //   .extract<{ code: number }>()
+        //   .toEqualTypeOf<{ code: number; message: string }>();
+        // expectTypeOf(result.error).exclude<{ code: number }>().toEqualTypeOf<never>();
       }
     });
 
-    test.skip('returns union for mismatched errors', async () => {
-      const client = createObservedClient<paths>();
-      const result = await client.GET('/mismatched-errors');
+    test('returns union for mismatched errors', async () => {
+      using client = openapiTestingClient<paths>();
+      const result = await firstEntryFrom(client.get('/mismatched-errors'));
       if (result.data) {
         expectTypeOf(result.data).toEqualTypeOf<Resource>();
-        // expectTypeOf(result.data).toEqualTypeOf<
-        //   MethodResponse<typeof client, 'get', '/mismatched-errors'>
-        // >();
       } else {
         expectTypeOf(result.data).toBeUndefined();
-        expectTypeOf(result.error)
-          .extract<{ code: number }>()
-          .toEqualTypeOf<{ code: number; message: string }>();
-        expectTypeOf(result.error).exclude<{ code: number }>().toEqualTypeOf(undefined);
+        // BEHAVIOR CHANGED errors are untyped
+        // expectTypeOf(result.error)
+        //   .extract<{ code: number }>()
+        //   .toEqualTypeOf<{ code: number; message: string }>();
+        // expectTypeOf(result.error).exclude<{ code: number }>().toEqualTypeOf(undefined);
       }
     });
 
     describe('media union', () => {
-      const client = createObservedClient<paths>();
+      using client = openapiTestingClient<paths>();
 
       // ⚠️ Warning: DO NOT iterate over type tests! Deduplicating runtime tests
       // is good. But these do not test runtime.
       test('application/json', async () => {
-        const { data } = await client.GET('/media-json');
+        const { data } = await firstEntryFrom(client.get('/media-json'));
         assertType<Resource[] | undefined>(data);
       });
 
       test('application/vnd.api+json', async () => {
-        const { data } = await client.GET('/media-vnd-json');
+        const { data } = await firstEntryFrom(client.get('/media-vnd-json'));
         assertType<Resource[] | undefined>(data);
       });
 
       test('text/html', async () => {
-        const { data } = await client.GET('/media-text');
+        const { data } = await firstEntryFrom(client.get('/media-text'));
         assertType<string | undefined>(data);
       });
 
       test('multiple', async () => {
-        const { data } = await client.GET('/media-multiple');
+        const { data } = await firstEntryFrom(client.get('/media-multiple'));
         assertType<{ foo: string } | { bar: string } | { baz: string } | string | undefined>(data);
       });
 
       test('invalid', async () => {
-        const { data } = await client.GET(
-          // @ts-expect-error not a real path
-          '/invalid',
-          {},
+        const { data } = await firstEntryFrom(
+          client.get(
+            // @ts-expect-error not a real path
+            '/invalid',
+            {},
+          ),
         );
         assertType<unknown>(data);
       });
     });
 
     test('`default` is an error', async () => {
-      const client = createObservedClient<paths>(
+      using client = openapiTestingClient<paths>(
         { headers: { 'Cache-Control': 'max-age=10000000' } },
-        async () =>
-          Response.json({ code: 500, message: 'An unexpected error occurred' }, { status: 500 }),
+        () => ({ body: { code: 500, message: 'An unexpected error occurred' }, status: 500 }),
       );
 
-      const { error } = await client.GET('/error-default');
+      const { error } = await firstEntryFrom(client.get('/error-default'));
       if (error) {
-        assertType<Error>(error);
+        // BEHAVIOR CHANGED errors are untyped
+        // assertType<Error>(error);
       }
     });
   });
 
   describe('response object', () => {
     test.each([200, 404, 500] as const)('%s', async (status) => {
-      const client = createObservedClient<paths>({}, async (req) =>
-        Response.json({ status, message: 'OK' }, { status }),
-      );
-      const result = await client.GET(status === 200 ? '/resources' : `/error-${status}`);
-      expect(result.response.status).toBe(status);
+      using client = openapiTestingClient<paths>({}, (req) => ({
+        body: { status, message: 'OK' },
+        status,
+      }));
+
+      try {
+        const response = await firstValueFrom(
+          client.get(status === 200 ? '/resources' : `/error-${status}`, { observe: 'response' }),
+        );
+        expect(response.status).toBe(status);
+        expect(response.status).toBe(200);
+      } catch (error: unknown) {
+        if (!(error instanceof HttpErrorResponse)) {
+          throw error;
+        }
+        expect(error.status).toBe(status);
+      }
     });
   });
 
   describe('responseType', () => {
     test('text', async () => {
-      const client = createObservedClient<paths>({}, async () => Response.json({}));
+      using client = openapiTestingClient<paths>({}, () => ({ body: 'hello' }));
 
-      const { data, error } = (await client.GET('/resources', {
-        responseType: 'text',
-      })) satisfies { data?: string };
-      if (error) {
-        throw new Error('parseAs text: error');
-      }
-      expect(data).toBe('{}');
+      const data = (await firstValueFrom(
+        client.get('/resources', {
+          responseType: 'text',
+        }),
+      )) satisfies string;
+
+      expect(data).toBe('hello');
     });
 
     test('arrayBuffer', async () => {
-      const client = createObservedClient<paths>({}, async () => Response.json({}));
+      using client = openapiTestingClient<paths>({}, () => ({
+        body: new Uint8Array([1, 10, 15, 2]).buffer,
+      }));
 
-      const { data, error } = (await client.GET('/resources', {
-        responseType: 'arraybuffer',
-      })) satisfies { data?: ArrayBuffer };
-      if (error) {
-        throw new Error('parseAs arrayBuffer: error');
-      }
-      expect(data.byteLength).toBe('{}'.length);
+      const data = (await firstValueFrom(
+        client.get('/resources', {
+          responseType: 'arraybuffer',
+        }),
+      )) satisfies ArrayBuffer;
+
+      expect(data?.byteLength).toBe(4);
     });
 
     test('blob', async () => {
-      const client = createObservedClient<paths>({}, async () => Response.json({}));
+      using client = openapiTestingClient<paths>({}, () => ({ body: new Blob([]) }));
 
-      const { data, error } = (await client.GET('/resources', {
-        responseType: 'blob',
-      })) satisfies { data?: Blob };
-      if (error) {
-        throw new Error('parseAs blob: error');
-      }
-      expect(data.constructor.name).toBe('Blob');
+      const data = (await firstValueFrom(
+        client.get('/resources', {
+          responseType: 'blob',
+        }),
+      )) satisfies Blob;
+
+      expect(data?.constructor.name).toBe('Blob');
     });
 
-    // test.skip('stream', async () => {
-    //   const { data } = (await client.GET('/resources', {
-    //     parseAs: 'stream',
-    //   })) satisfies { data?: ReadableStream<Uint8Array> | null };
-    //   if (!data) {
-    //     throw new Error('parseAs stream: error');
-    //   }
-
-    //   expect(data).toBeInstanceOf(ReadableStream);
-    //   const reader = data.getReader();
-    //   const result = await reader.read();
-    //   expect(result.value?.length).toBe(2);
-    // });
-
     test('use the selected content', async () => {
-      const client = createObservedClient<paths, 'application/ld+json'>({}, async () =>
-        Response.json({ bar: 'bar' }),
+      using client = openapiTestingClient<paths, 'application/ld+json'>({}, () => ({
+        body: { bar: 'bar' },
+      }));
+      const { data } = await firstEntryFrom(
+        client.get('/media-multiple', {
+          headers: { Accept: 'application/ld+json' },
+        }),
       );
-      const { data } = await client.GET('/media-multiple', {
-        headers: { Accept: 'application/ld+json' },
-      });
       if (data) {
         assertType<{ bar: string }>(data);
       }
