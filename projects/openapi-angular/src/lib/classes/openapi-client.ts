@@ -27,7 +27,7 @@ export class OpenapiClientImpl<
 {
   constructor(
     private readonly http: HttpClient,
-    private readonly options: OpenapiClientOptions = {},
+    private readonly clientOptions: OpenapiClientOptions = {},
   ) {}
 
   request<
@@ -44,12 +44,13 @@ export class OpenapiClientImpl<
       params = {},
       body,
       querySerializer: requestQuerySerializer,
-      bodySerializer = this.options.bodySerializer ?? identity,
+      bodySerializer = this.clientOptions.bodySerializer ?? identity,
       ...restOptions
     } = init[0] || {};
-    const baseUrl = (localBaseUrl ? removeTrailingSlash(localBaseUrl) : this.options.baseUrl) ?? '';
+    const baseUrl =
+      (localBaseUrl ? removeTrailingSlash(localBaseUrl) : this.clientOptions.baseUrl) ?? '';
     const querySerializer = combineQuerySerializers(
-      this.options.querySerializer,
+      this.clientOptions.querySerializer,
       requestQuerySerializer,
     );
     const serializedBody = body === undefined ? undefined : bodySerializer(body as any);
@@ -71,5 +72,75 @@ export class OpenapiClientImpl<
     ...init: OpenapiInitParam<Init>
   ): Observable<OpenapiResponse<Paths[Path]['get'], Init, Media>> {
     return this.request('get', path, ...init);
+  }
+
+  head<
+    Path extends PathsWithMethod<Paths, 'head'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'head'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Observable<OpenapiResponse<Paths[Path]['head'], Init, Media>> {
+    return this.request('head', path, ...init);
+  }
+
+  options<
+    Path extends PathsWithMethod<Paths, 'options'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'options'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Observable<OpenapiResponse<Paths[Path]['options'], Init, Media>> {
+    return this.request('options', path, ...init);
+  }
+
+  patch<
+    Path extends PathsWithMethod<Paths, 'patch'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'patch'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Observable<OpenapiResponse<Paths[Path]['patch'], Init, Media>> {
+    return this.request('patch', path, ...init);
+  }
+
+  post<
+    Path extends PathsWithMethod<Paths, 'post'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'post'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Observable<OpenapiResponse<Paths[Path]['post'], Init, Media>> {
+    return this.request('post', path, ...init);
+  }
+
+  put<
+    Path extends PathsWithMethod<Paths, 'put'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'put'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Observable<OpenapiResponse<Paths[Path]['put'], Init, Media>> {
+    return this.request('put', path, ...init);
+  }
+
+  trace<
+    Path extends PathsWithMethod<Paths, 'trace'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'trace'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Observable<OpenapiResponse<Paths[Path]['trace'], Init, Media>> {
+    return this.request('trace', path, ...init);
+  }
+
+  delete<
+    Path extends PathsWithMethod<Paths, 'delete'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'delete'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Observable<OpenapiResponse<Paths[Path]['delete'], Init, Media>> {
+    return this.request('delete', path, ...init);
   }
 }

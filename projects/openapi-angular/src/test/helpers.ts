@@ -11,8 +11,9 @@ import {
   openapiClient,
   OpenapiInitParam,
   OpenapiMaybeOptionalInit,
+  OpenapiResponse,
 } from '../public-api';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { OpenapiObservedResponse } from './helpers.types';
 import { provideZonelessChangeDetection } from '@angular/core';
 
@@ -37,39 +38,165 @@ export function createObservedClient<T extends {}, M extends MediaType = MediaTy
   return new OpenapiObservedClient(client);
 }
 
+async function patch(data: Observable<any>): Promise<any> {
+  try {
+    const response = (await firstValueFrom(data)) as HttpResponse<unknown>;
+
+    return {
+      data: response.body as any,
+      response,
+    };
+  } catch (e: unknown) {
+    if (e instanceof HttpErrorResponse) {
+      return {
+        error: e.error,
+        response: e,
+      };
+    }
+    throw e;
+  }
+}
+
 export class OpenapiObservedClient<
   Paths extends Record<string, Record<HttpMethod, {}>>,
   Media extends MediaType = MediaType,
 > {
   constructor(private readonly client: OpenapiClient<Paths, Media>) {}
 
-  async get<
+  async request<
+    Method extends HttpMethod,
+    Path extends PathsWithMethod<Paths, Method>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], Method>,
+  >(
+    method: Method,
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Promise<OpenapiObservedResponse<Paths[Path][Method], Init, Media>> {
+    return patch(
+      this.client.request<Method, Path, Init>(method, path, {
+        ...(init[0] || {}),
+        observe: 'response',
+      } as any),
+    );
+  }
+
+  async GET<
     Path extends PathsWithMethod<Paths, 'get'>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], 'get'>,
   >(
     path: Path,
     ...init: OpenapiInitParam<Init>
   ): Promise<OpenapiObservedResponse<Paths[Path]['get'], Init, Media>> {
-    try {
-      const response = (await firstValueFrom(
-        this.client.get<Path, Init>(path, {
-          ...(init[0] || {}),
-          observe: 'response',
-        } as any),
-      )) as HttpResponse<unknown>;
+    return patch(
+      this.client.get<Path, Init>(path, {
+        ...(init[0] || {}),
+        observe: 'response',
+      } as any),
+    );
+  }
 
-      return {
-        data: response.body as any,
-        response,
-      };
-    } catch (e: unknown) {
-      if (e instanceof HttpErrorResponse) {
-        return {
-          error: e.error,
-          response: e,
-        };
-      }
-      throw e;
-    }
+  async HEAD<
+    Path extends PathsWithMethod<Paths, 'head'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'head'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Promise<OpenapiObservedResponse<Paths[Path]['head'], Init, Media>> {
+    return patch(
+      this.client.head<Path, Init>(path, {
+        ...(init[0] || {}),
+        observe: 'response',
+      } as any),
+    );
+  }
+
+  async OPTIONS<
+    Path extends PathsWithMethod<Paths, 'options'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'options'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Promise<OpenapiObservedResponse<Paths[Path]['options'], Init, Media>> {
+    return patch(
+      this.client.options<Path, Init>(path, {
+        ...(init[0] || {}),
+        observe: 'response',
+      } as any),
+    );
+  }
+
+  async PATCH<
+    Path extends PathsWithMethod<Paths, 'patch'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'patch'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Promise<OpenapiObservedResponse<Paths[Path]['patch'], Init, Media>> {
+    return patch(
+      this.client.patch<Path, Init>(path, {
+        ...(init[0] || {}),
+        observe: 'response',
+      } as any),
+    );
+  }
+
+  async POST<
+    Path extends PathsWithMethod<Paths, 'post'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'post'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Promise<OpenapiObservedResponse<Paths[Path]['post'], Init, Media>> {
+    return patch(
+      this.client.post<Path, Init>(path, {
+        ...(init[0] || {}),
+        observe: 'response',
+      } as any),
+    );
+  }
+
+  async PUT<
+    Path extends PathsWithMethod<Paths, 'put'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'put'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Promise<OpenapiObservedResponse<Paths[Path]['put'], Init, Media>> {
+    return patch(
+      this.client.put<Path, Init>(path, {
+        ...(init[0] || {}),
+        observe: 'response',
+      } as any),
+    );
+  }
+
+  async TRACE<
+    Path extends PathsWithMethod<Paths, 'trace'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'trace'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Promise<OpenapiObservedResponse<Paths[Path]['trace'], Init, Media>> {
+    return patch(
+      this.client.trace<Path, Init>(path, {
+        ...(init[0] || {}),
+        observe: 'response',
+      } as any),
+    );
+  }
+
+  async DELETE<
+    Path extends PathsWithMethod<Paths, 'delete'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'delete'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Promise<OpenapiObservedResponse<Paths[Path]['delete'], Init, Media>> {
+    return patch(
+      this.client.delete<Path, Init>(path, {
+        ...(init[0] || {}),
+        observe: 'response',
+      } as any),
+    );
   }
 }

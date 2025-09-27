@@ -31,4 +31,60 @@ export interface OpenapiClient<
     path: Path,
     ...init: OpenapiInitParam<Init>
   ): Observable<OpenapiResponse<Paths[Path]['get'], Init, Media>>;
+
+  head<
+    Path extends PathsWithMethod<Paths, 'head'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'head'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Observable<OpenapiResponse<Paths[Path]['head'], Init, Media>>;
+
+  options<
+    Path extends PathsWithMethod<Paths, 'options'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'options'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Observable<OpenapiResponse<Paths[Path]['options'], Init, Media>>;
+
+  patch<
+    Path extends PathsWithMethod<Paths, 'patch'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'patch'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Observable<OpenapiResponse<Paths[Path]['patch'], Init, Media>>;
+
+  post<
+    Path extends PathsWithMethod<Paths, 'post'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'post'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Observable<OpenapiResponse<Paths[Path]['post'], Init, Media>>;
+
+  put<
+    Path extends PathsWithMethod<Paths, 'put'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'put'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Observable<OpenapiResponse<Paths[Path]['put'], Init, Media>>;
+
+  trace<
+    Path extends PathsWithMethod<Paths, 'trace'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'trace'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Observable<OpenapiResponse<Paths[Path]['trace'], Init, Media>>;
+
+  delete<
+    Path extends PathsWithMethod<Paths, 'delete'>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], 'delete'>,
+  >(
+    path: Path,
+    ...init: OpenapiInitParam<Init>
+  ): Observable<OpenapiResponse<Paths[Path]['delete'], Init, Media>>;
 }
