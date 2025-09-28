@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { assertInInjectionContext, inject, Injector } from '@angular/core';
-import type { HttpMethod, MediaType, PathsWithMethod } from 'openapi-typescript-helpers';
+import type { HttpMethod, MediaType } from 'openapi-typescript-helpers';
 import type { Observable } from 'rxjs';
 import { identity } from 'rxjs';
 
@@ -8,6 +8,7 @@ import { combineQuerySerializers } from '../serializers/query';
 import { createFinalURL } from '../serializers/url';
 import type { OpenapiClient, OpenapiClientOptions } from '../types/openapi-client';
 import type { OpenapiInitParam, OpenapiMaybeOptionalInit } from '../types/openapi-init';
+import type { OpenapiPathsWithMethod } from '../types/openapi-path';
 import type { OpenapiResponse } from '../types/openapi-response';
 import { removeTrailingSlash } from '../utils/common';
 import { mergeHeaders } from '../utils/headers';
@@ -37,7 +38,7 @@ export class OpenapiClientImpl<
 
   request<
     Method extends HttpMethod,
-    Path extends PathsWithMethod<Paths, Method>,
+    Path extends OpenapiPathsWithMethod<Paths, Method>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], Method>,
   >(
     method: Method,
@@ -71,7 +72,7 @@ export class OpenapiClientImpl<
   }
 
   get<
-    Path extends PathsWithMethod<Paths, 'get'>,
+    Path extends OpenapiPathsWithMethod<Paths, 'get'>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], 'get'>,
   >(
     path: Path,
@@ -81,7 +82,7 @@ export class OpenapiClientImpl<
   }
 
   head<
-    Path extends PathsWithMethod<Paths, 'head'>,
+    Path extends OpenapiPathsWithMethod<Paths, 'head'>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], 'head'>,
   >(
     path: Path,
@@ -91,7 +92,7 @@ export class OpenapiClientImpl<
   }
 
   options<
-    Path extends PathsWithMethod<Paths, 'options'>,
+    Path extends OpenapiPathsWithMethod<Paths, 'options'>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], 'options'>,
   >(
     path: Path,
@@ -101,7 +102,7 @@ export class OpenapiClientImpl<
   }
 
   patch<
-    Path extends PathsWithMethod<Paths, 'patch'>,
+    Path extends OpenapiPathsWithMethod<Paths, 'patch'>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], 'patch'>,
   >(
     path: Path,
@@ -111,7 +112,7 @@ export class OpenapiClientImpl<
   }
 
   post<
-    Path extends PathsWithMethod<Paths, 'post'>,
+    Path extends OpenapiPathsWithMethod<Paths, 'post'>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], 'post'>,
   >(
     path: Path,
@@ -121,7 +122,7 @@ export class OpenapiClientImpl<
   }
 
   put<
-    Path extends PathsWithMethod<Paths, 'put'>,
+    Path extends OpenapiPathsWithMethod<Paths, 'put'>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], 'put'>,
   >(
     path: Path,
@@ -131,7 +132,7 @@ export class OpenapiClientImpl<
   }
 
   trace<
-    Path extends PathsWithMethod<Paths, 'trace'>,
+    Path extends OpenapiPathsWithMethod<Paths, 'trace'>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], 'trace'>,
   >(
     path: Path,
@@ -141,7 +142,7 @@ export class OpenapiClientImpl<
   }
 
   delete<
-    Path extends PathsWithMethod<Paths, 'delete'>,
+    Path extends OpenapiPathsWithMethod<Paths, 'delete'>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], 'delete'>,
   >(
     path: Path,

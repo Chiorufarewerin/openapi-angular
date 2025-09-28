@@ -1,8 +1,9 @@
 import type { Injector } from '@angular/core';
-import type { HttpMethod, MediaType, PathsWithMethod } from 'openapi-typescript-helpers';
+import type { HttpMethod, MediaType } from 'openapi-typescript-helpers';
 import type { Observable } from 'rxjs';
 
 import type { OpenapiInitParam, OpenapiMaybeOptionalInit } from './openapi-init';
+import type { OpenapiPathsWithMethod } from './openapi-path';
 import type { OpenapiRequestCommonOptions } from './openapi-request';
 import type { OpenapiResponse } from './openapi-response';
 
@@ -17,7 +18,7 @@ export interface OpenapiClient<
 > {
   request<
     Method extends HttpMethod,
-    Path extends PathsWithMethod<Paths, Method>,
+    Path extends OpenapiPathsWithMethod<Paths, Method>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], Method>,
   >(
     method: Method,
@@ -26,7 +27,7 @@ export interface OpenapiClient<
   ): Observable<OpenapiResponse<Paths[Path][Method], Init, Media>>;
 
   get<
-    Path extends PathsWithMethod<Paths, 'get'>,
+    Path extends OpenapiPathsWithMethod<Paths, 'get'>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], 'get'>,
   >(
     path: Path,
@@ -34,7 +35,7 @@ export interface OpenapiClient<
   ): Observable<OpenapiResponse<Paths[Path]['get'], Init, Media>>;
 
   head<
-    Path extends PathsWithMethod<Paths, 'head'>,
+    Path extends OpenapiPathsWithMethod<Paths, 'head'>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], 'head'>,
   >(
     path: Path,
@@ -42,7 +43,7 @@ export interface OpenapiClient<
   ): Observable<OpenapiResponse<Paths[Path]['head'], Init, Media>>;
 
   options<
-    Path extends PathsWithMethod<Paths, 'options'>,
+    Path extends OpenapiPathsWithMethod<Paths, 'options'>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], 'options'>,
   >(
     path: Path,
@@ -50,7 +51,7 @@ export interface OpenapiClient<
   ): Observable<OpenapiResponse<Paths[Path]['options'], Init, Media>>;
 
   patch<
-    Path extends PathsWithMethod<Paths, 'patch'>,
+    Path extends OpenapiPathsWithMethod<Paths, 'patch'>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], 'patch'>,
   >(
     path: Path,
@@ -58,7 +59,7 @@ export interface OpenapiClient<
   ): Observable<OpenapiResponse<Paths[Path]['patch'], Init, Media>>;
 
   post<
-    Path extends PathsWithMethod<Paths, 'post'>,
+    Path extends OpenapiPathsWithMethod<Paths, 'post'>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], 'post'>,
   >(
     path: Path,
@@ -66,7 +67,7 @@ export interface OpenapiClient<
   ): Observable<OpenapiResponse<Paths[Path]['post'], Init, Media>>;
 
   put<
-    Path extends PathsWithMethod<Paths, 'put'>,
+    Path extends OpenapiPathsWithMethod<Paths, 'put'>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], 'put'>,
   >(
     path: Path,
@@ -74,7 +75,7 @@ export interface OpenapiClient<
   ): Observable<OpenapiResponse<Paths[Path]['put'], Init, Media>>;
 
   trace<
-    Path extends PathsWithMethod<Paths, 'trace'>,
+    Path extends OpenapiPathsWithMethod<Paths, 'trace'>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], 'trace'>,
   >(
     path: Path,
@@ -82,7 +83,7 @@ export interface OpenapiClient<
   ): Observable<OpenapiResponse<Paths[Path]['trace'], Init, Media>>;
 
   delete<
-    Path extends PathsWithMethod<Paths, 'delete'>,
+    Path extends OpenapiPathsWithMethod<Paths, 'delete'>,
     Init extends OpenapiMaybeOptionalInit<Paths[Path], 'delete'>,
   >(
     path: Path,

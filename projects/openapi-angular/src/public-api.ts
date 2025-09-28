@@ -5,6 +5,7 @@
 export { openapiClient } from './lib/classes/openapi-client';
 export type { OpenapiClient, OpenapiClientOptions } from './lib/types/openapi-client';
 export type { OpenapiInitParam, OpenapiMaybeOptionalInit } from './lib/types/openapi-init';
+export type { OpenapiPathsWithMethod } from './lib/types/openapi-path';
 export type {
   OpenapiDefaultParamsOption,
   OpenapiHttpRequestOptions,
