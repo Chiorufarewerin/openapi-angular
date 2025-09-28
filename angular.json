@@ -27,7 +27,8 @@
             "tsConfig": "projects/openapi-angular/tsconfig.spec.json",
             "runner": "vitest",
             "buildTarget": "::development",
-            "include": ["**/*.test.ts", "**/*.spec.ts"]
+            "include": ["**/*.test.ts", "**/*.spec.ts"],
+            "watch": false
           }
         }
       }
@@ -97,7 +98,8 @@
             "tsConfig": "projects/demo/tsconfig.spec.json",
             "runner": "vitest",
             "buildTarget": "::development",
-            "include": ["**/*.test.ts", "**/*.spec.ts"]
+            "include": ["**/*.test.ts", "**/*.spec.ts"],
+            "watch": false
           }
         }
       }

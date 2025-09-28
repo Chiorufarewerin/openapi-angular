@@ -1,0 +1,44 @@
+name: Lint & Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Prettier (check)
+        run: npm run format:check
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: Test
+        run: npm run test
+
+      - name: Build lib
+        run: npm run build:lib
+
+      - name: Build demo
+        run: npm run build:demo

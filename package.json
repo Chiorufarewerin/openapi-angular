@@ -3,17 +3,15 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "start": "ng serve demo",
+    "build:demo": "ng build demo",
     "test": "ng test",
-    "copy-files": "cp README.md dist/openapi-angular && cp LICENSE dist/openapi-angular",
-    "prepublish": "ng build openapi-angular --configuration production && npm run copy-files",
-    "publish": "npm run prepublish && npm publish ./dist/openapi-angular",
-    "lint": "eslint . --ext .ts,.html",
+    "lint": "eslint . --ext .ts,.html --max-warnings=0",
     "lint:fix": "eslint . --ext .ts,.html --fix",
     "format": "prettier . --write",
-    "format:check": "prettier . --check"
+    "format:check": "prettier . --check",
+    "build:lib": "ng build openapi-angular --configuration production && cp README.md dist/openapi-angular && cp LICENSE dist/openapi-angular",
+    "publish:lib": "npm run build:lib && npm publish ./dist/openapi-angular"
   },
   "prettier": {
     "printWidth": 100,
