@@ -100,6 +100,39 @@ npm install openapi-angular
 
 4. **Typed responses:** Automatic typing for `application/json` payloads.
 
+5. **Body placement for `POST`/`PUT`/`PATCH`:**  
+   In Angular’s `HttpClient`, these methods accept the **body as the 2nd argument** and options as the 3rd:
+
+   ```ts
+   // HttpClient
+   http.post(url, body, options?);
+   http.put(url, body, options?);
+   http.patch(url, body, options?);
+   ```
+
+   In **openapi-angular**, the **body is part of the options object** (alongside `params`, `headers`, etc.). This keeps the API uniform across methods and allows the body to be fully type-checked against your OpenAPI schema:
+
+   ```ts
+   // openapi-angular
+   client.post('/posts', {
+     body: { title: 'Hello', content: 'World' }, // ✅ strongly typed body
+     params: { query: { draft: true } }, // ✅ typed query
+     headers: { 'X-Request-ID': '123' },
+   });
+
+   client.put('/posts/{id}', {
+     body: { title: 'Updated' },
+     params: { path: { id: '42' } },
+   });
+
+   client.patch('/posts/{id}', {
+     body: { title: 'Patched' },
+     params: { path: { id: '42' } },
+   });
+   ```
+
+   > Bonus: whether the `body` is **required or optional** is inferred from the OpenAPI operation. If an endpoint has no request body, you simply omit `body`.
+
 ## Error Handling
 
 The client provides typed success responses; handle failures as usual:
@@ -178,7 +211,7 @@ import { HttpParams } from '@angular/common/http';
 client.post('/auth/login', {
   headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, // optional; Angular sets it when body is HttpParams
   body: { username: 'alice', password: 'secret' },
-  bodySerializer: (body) => new HttpParams({ fromObject: body as Record<string, string> }),
+  bodySerializer: (body) => new HttpParams({ fromObject: body }),
 });
 ```
 
