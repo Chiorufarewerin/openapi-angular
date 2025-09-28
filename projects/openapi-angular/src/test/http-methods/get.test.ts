@@ -1,7 +1,8 @@
-import { describe, expect, test } from 'vitest';
-import type { paths } from './schemas/get.js';
-import { firstEntryFrom, openapiTestingClient } from '../testing.js';
 import { HttpErrorResponse } from '@angular/common/http';
+import { describe, expect, test } from 'vitest';
+
+import { firstEntryFrom, openapiTestingClient } from '../testing.js';
+import type { paths } from './schemas/get.js';
 
 describe('GET', () => {
   test('sends correct method', async () => {

@@ -1,8 +1,8 @@
-import { HttpEvent, HttpResponse } from '@angular/common/http';
-import { MediaType, ResponseObjectMap, SuccessResponse } from 'openapi-typescript-helpers';
+import type { HttpEvent, HttpResponse } from '@angular/common/http';
+import type { MediaType, ResponseObjectMap, SuccessResponse } from 'openapi-typescript-helpers';
 
 export type OpenapiResponse<
-  T extends Record<string | number, any>,
+  T extends Record<string | number, unknown>,
   Options,
   Media extends MediaType,
 > = Options extends {

@@ -1,13 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { assertInInjectionContext, inject, Injector } from '@angular/core';
-import { HttpMethod, MediaType, PathsWithMethod } from 'openapi-typescript-helpers';
-import { OpenapiClient, OpenapiClientOptions } from '../types/openapi-client';
-import { Observable, identity } from 'rxjs';
-import { OpenapiMaybeOptionalInit, OpenapiInitParam } from '../types/openapi-init';
-import { OpenapiResponse } from '../types/openapi-response';
-import { removeTrailingSlash } from '../utils/common';
-import { createFinalURL } from '../serializers/url';
+import type { HttpMethod, MediaType, PathsWithMethod } from 'openapi-typescript-helpers';
+import type { Observable } from 'rxjs';
+import { identity } from 'rxjs';
+
 import { combineQuerySerializers } from '../serializers/query';
+import { createFinalURL } from '../serializers/url';
+import type { OpenapiClient, OpenapiClientOptions } from '../types/openapi-client';
+import type { OpenapiInitParam, OpenapiMaybeOptionalInit } from '../types/openapi-init';
+import type { OpenapiResponse } from '../types/openapi-response';
+import { removeTrailingSlash } from '../utils/common';
 import { mergeHeaders } from '../utils/headers';
 
 export function openapiClient<Paths extends {}, Media extends MediaType = MediaType>(

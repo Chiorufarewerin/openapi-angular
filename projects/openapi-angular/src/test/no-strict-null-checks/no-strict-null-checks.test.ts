@@ -1,7 +1,8 @@
+import { firstValueFrom } from 'rxjs';
 import { assertType, describe, expect, test } from 'vitest';
+
 import type { components, paths } from '../common/schemas/common.js';
 import { openapiTestingClient } from '../testing.js';
-import { firstValueFrom } from 'rxjs';
 
 // Perform some basic type tests
 // but with `strictNullChecks` disabled in tsconfig.json

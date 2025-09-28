@@ -1,7 +1,8 @@
-import { assertType, describe, expect, test } from 'vitest';
-import type { paths } from './schemas/delete.js';
-import { firstEntryFrom, openapiTestingClient } from '../testing.js';
 import { HttpHeaders } from '@angular/common/http';
+import { assertType, describe, expect, test } from 'vitest';
+
+import { firstEntryFrom, openapiTestingClient } from '../testing.js';
+import type { paths } from './schemas/delete.js';
 
 describe('DELETE', () => {
   test('returns empty object on 204', async () => {

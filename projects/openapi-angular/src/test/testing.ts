@@ -1,17 +1,18 @@
+import type { HttpEvent, HttpHeaders, HttpRequest } from '@angular/common/http';
 import {
   HttpBackend,
   HttpErrorResponse,
-  HttpEvent,
-  HttpHeaders,
-  HttpRequest,
   HttpResponse,
   provideHttpClient,
 } from '@angular/common/http';
 import { inject, InjectionToken, Injector, provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { MediaType } from 'openapi-typescript-helpers';
-import { OpenapiClient, openapiClient, OpenapiClientOptions } from '../public-api';
-import { firstValueFrom, Observable, of, throwError } from 'rxjs';
+import type { MediaType } from 'openapi-typescript-helpers';
+import type { Observable } from 'rxjs';
+import { firstValueFrom, of, throwError } from 'rxjs';
+
+import type { OpenapiClient, OpenapiClientOptions } from '../public-api';
+import { openapiClient } from '../public-api';
 
 type ResponseData<T> = {
   body?: T | null;

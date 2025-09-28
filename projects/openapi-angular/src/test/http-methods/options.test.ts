@@ -1,8 +1,9 @@
+import { HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { describe, expect, test } from 'vitest';
-import type { paths } from './schemas/options.js';
+
 import { openapiTestingClient } from '../testing.js';
-import { HttpHeaders } from '@angular/common/http';
+import type { paths } from './schemas/options.js';
 
 describe('OPTIONS', () => {
   test('sends the correct method', async () => {

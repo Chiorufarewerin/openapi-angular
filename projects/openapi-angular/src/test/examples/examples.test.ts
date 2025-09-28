@@ -1,12 +1,14 @@
+import { firstValueFrom } from 'rxjs';
 import { assertType, test } from 'vitest';
+
+import { openapiTestingClient } from '../testing.js';
 import type { paths as GitHub } from './schemas/github.js';
 import type { paths as Stripe } from './schemas/stripe.js';
-import { firstEntryFrom, openapiTestingClient } from '../testing.js';
 
 test('github', async () => {
   using client = openapiTestingClient<GitHub>();
   const pathname = '/users/{username}';
-  const { data, error } = await firstEntryFrom(
+  const data = await firstValueFrom(
     client.get(pathname, {
       params: { path: { username: 'octocat' } },
     }),
@@ -26,7 +28,7 @@ test('github', async () => {
 test('stripe', async () => {
   using client = openapiTestingClient<Stripe>();
   const pathname = '/v1/accounts/{account}';
-  const { data, error } = await firstEntryFrom(
+  const data = await firstValueFrom(
     client.get(pathname, {
       params: { path: { account: 'acct_1' } },
     }),

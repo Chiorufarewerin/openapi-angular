@@ -1,8 +1,9 @@
-import { assertType, describe, expect, test } from 'vitest';
-import type { components, paths } from './schemas/common.js';
-import { OpenapiQuerySerializerOptions } from '../../public-api.js';
-import { openapiTestingClient } from '../testing.js';
 import { firstValueFrom } from 'rxjs';
+import { assertType, describe, expect, test } from 'vitest';
+
+import type { OpenapiQuerySerializerOptions } from '../../public-api.js';
+import { openapiTestingClient } from '../testing.js';
+import type { components, paths } from './schemas/common.js';
 
 type Resource = components['schemas']['Resource'];
 

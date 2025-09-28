@@ -1,8 +1,9 @@
-import { describe, expect, test } from 'vitest';
-import type { paths } from './schemas/post.js';
-import { firstEntryFrom, openapiTestingClient } from '../testing.js';
+import type { HttpRequest } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { HttpRequest } from '@angular/common/http';
+import { describe, expect, test } from 'vitest';
+
+import { firstEntryFrom, openapiTestingClient } from '../testing.js';
+import type { paths } from './schemas/post.js';
 
 describe('POST', () => {
   test('sends the correct method', async () => {

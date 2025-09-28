@@ -1,5 +1,6 @@
 import { HttpHeaders } from '@angular/common/http';
-import { OpenapiHeadersOptions } from '../types/openapi-header';
+
+import type { OpenapiHeadersOptions } from '../types/openapi-header';
 
 export function mergeHeaders(...allHeaders: (OpenapiHeadersOptions | undefined)[]): HttpHeaders {
   const finalHeaders = new Headers();

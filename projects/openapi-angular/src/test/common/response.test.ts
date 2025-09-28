@@ -1,8 +1,9 @@
-import { assertType, describe, expect, expectTypeOf, test } from 'vitest';
-import type { components, paths } from './schemas/common.js';
-import { firstEntryFrom, openapiTestingClient } from '../testing.js';
-import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+import { assertType, describe, expect, expectTypeOf, test } from 'vitest';
+
+import { firstEntryFrom, openapiTestingClient } from '../testing.js';
+import type { components, paths } from './schemas/common.js';
 
 type Resource = components['schemas']['Resource'];
 
@@ -144,7 +145,7 @@ describe('response', () => {
 
   describe('response object', () => {
     test.each([200, 404, 500] as const)('%s', async (status) => {
-      using client = openapiTestingClient<paths>({}, (req) => ({
+      using client = openapiTestingClient<paths>({}, () => ({
         body: { status, message: 'OK' },
         status,
       }));

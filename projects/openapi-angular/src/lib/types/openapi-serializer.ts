@@ -1,4 +1,4 @@
-import { OperationRequestBodyContent } from 'openapi-typescript-helpers';
+import type { OperationRequestBodyContent } from 'openapi-typescript-helpers';
 
 /** @see https://swagger.io/docs/specification/serialization/#query */
 export type OpenapiQuerySerializerOptions = {
@@ -32,4 +32,4 @@ export type OpenapiQuerySerializer<T> = (
     : Record<string, unknown>,
 ) => string;
 
-export type OpenapiBodySerializer<T> = (body: OperationRequestBodyContent<T>) => any;
+export type OpenapiBodySerializer<T, U = unknown> = (body: OperationRequestBodyContent<T>) => U;

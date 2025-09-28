@@ -1,15 +1,16 @@
-import { HttpContext, HttpHeaders } from '@angular/common/http';
-import {
+import type { HttpContext } from '@angular/common/http';
+import type {
   IsOperationRequestBodyOptional,
   OperationRequestBodyContent,
   RequiredKeysOf,
 } from 'openapi-typescript-helpers';
-import {
+
+import type { OpenapiHeadersOptions } from './openapi-header';
+import type {
   OpenapiBodySerializer,
   OpenapiQuerySerializer,
   OpenapiQuerySerializerOptions,
 } from './openapi-serializer';
-import { OpenapiHeadersOptions } from './openapi-header';
 
 export type OpenapiRequest<T> = OpenapiRequestOptions<T> & OpenapiHttpRequestOptions;
 

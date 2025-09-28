@@ -8,7 +8,12 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "copy-files": "cp README.md dist/openapi-angular && cp LICENSE dist/openapi-angular",
-    "publish": "ng build openapi-angular --configuration production && npm run copy-files && npm publish ./dist/openapi-angular"
+    "prepublish": "ng build openapi-angular --configuration production && npm run copy-files",
+    "publish": "npm run prepublish && npm publish ./dist/openapi-angular",
+    "lint": "eslint . --ext .ts,.html",
+    "lint:fix": "eslint . --ext .ts,.html --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
   },
   "prettier": {
     "printWidth": 100,
@@ -35,9 +40,19 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
+    "@angular-eslint/eslint-plugin": "^20.3.0",
+    "@angular-eslint/eslint-plugin-template": "^20.3.0",
     "@angular/build": "^20.3.3",
     "@angular/cli": "^20.3.3",
     "@angular/compiler-cli": "^20.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.44.1",
+    "@typescript-eslint/parser": "^8.44.1",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-rxjs": "^5.0.3",
+    "eslint-plugin-rxjs-angular": "^2.0.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
     "ng-packagr": "^20.3.0",
     "openapi-fetch": "^0.14.0",
     "openapi-typescript": "^7.9.1",

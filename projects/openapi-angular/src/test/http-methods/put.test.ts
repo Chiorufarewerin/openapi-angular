@@ -1,7 +1,8 @@
-import { describe, expect, test } from 'vitest';
-import type { paths } from './schemas/put.js';
-import { openapiTestingClient } from '../testing.js';
 import { firstValueFrom } from 'rxjs';
+import { describe, expect, test } from 'vitest';
+
+import { openapiTestingClient } from '../testing.js';
+import type { paths } from './schemas/put.js';
 
 describe('PUT', () => {
   test('sends the correct method', async () => {

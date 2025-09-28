@@ -1,8 +1,9 @@
-import { assertType, describe, expect, test } from 'vitest';
-import type { components, paths } from './schemas/never-response.js';
-import { firstEntryFrom, openapiTestingClient } from '../testing.js';
 import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { assertType, describe, expect, test } from 'vitest';
+
+import { firstEntryFrom, openapiTestingClient } from '../testing.js';
+import type { components, paths } from './schemas/never-response.js';
 
 describe('GET', () => {
   test('sends correct method', async () => {

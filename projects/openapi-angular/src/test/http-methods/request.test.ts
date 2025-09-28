@@ -1,8 +1,9 @@
 import { firstValueFrom } from 'rxjs';
 import { describe, expect, test } from 'vitest';
+
+import { openapiTestingClient } from '../testing.js';
 import type { paths as get_paths } from './schemas/get.js';
 import type { paths as post_paths } from './schemas/post.js';
-import { openapiTestingClient } from '../testing.js';
 
 describe('request', () => {
   test('sends correct method', async () => {

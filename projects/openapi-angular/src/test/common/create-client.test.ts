@@ -1,9 +1,10 @@
+import type { HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { describe, expect, test } from 'vitest';
-import type { paths } from './schemas/common.js';
-import { OpenapiRequest } from '../../public-api.js';
+
+import type { OpenapiRequest } from '../../public-api.js';
 import { openapiTestingClient } from '../testing.js';
-import { HttpHeaders } from '@angular/common/http';
+import type { paths } from './schemas/common.js';
 
 describe('createClient options', () => {
   test('baseUrl', async () => {
