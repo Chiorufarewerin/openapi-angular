@@ -13,7 +13,7 @@ describe('request', () => {
       return {};
     });
 
-    await firstValueFrom(client.request('get', '/posts'));
+    await firstValueFrom(client.request('GET', '/posts'));
     expect(method).toBe('GET');
   });
 
@@ -25,7 +25,7 @@ describe('request', () => {
     });
 
     await firstValueFrom(
-      client.request('post', '/posts', {
+      client.request('POST', '/posts', {
         body: {
           title: 'My Post',
           body: 'Post body',

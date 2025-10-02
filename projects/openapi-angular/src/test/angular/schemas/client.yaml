@@ -1,0 +1,69 @@
+openapi: 3.1.0
+info:
+  title: openapi-fetch
+  version: '1.0'
+paths:
+  /test:
+    get:
+      parameters:
+        - name: test
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: boolean
+              - type: integer
+              - type: array
+                items:
+                  anyOf:
+                    - type: string
+                    - type: boolean
+                    - type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: {}
+    post:
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+          application/json:
+            schema:
+              anyOf:
+                - type: object
+                  properties:
+                    data:
+                      type: string
+                - type: boolean
+                - type: integer
+          application/octet-stream:
+            schema: {}
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: {}
+
+    delete:
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: {}
