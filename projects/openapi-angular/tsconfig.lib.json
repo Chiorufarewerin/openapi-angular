@@ -8,6 +8,5 @@
     "declarationMap": true,
     "types": []
   },
-  "include": ["src/public-api.ts", "src/lib/**/&.ts"],
-  "exclude": ["src/test/**/*.ts", "**/*.spec.ts", "**/*.test.ts"]
+  "include": ["src/**/*.ts"],
 }

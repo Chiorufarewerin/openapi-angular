@@ -3,8 +3,8 @@ import { HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { describe, expect, test, vi } from 'vitest';
 
-import { getHeadersIterator } from '../../lib/utils/headers.js';
 import type { OpenapiBodySerializer, OpenapiRequest } from '../../public-api.js';
+import { getHeadersIterator } from '../../src/lib/utils/headers.js';
 import { openapiTestingClient } from '../testing.js';
 import type { components, paths } from './schemas/common.js';
 

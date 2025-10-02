@@ -6,7 +6,7 @@
     "openapi-angular": {
       "projectType": "library",
       "root": "projects/openapi-angular",
-      "sourceRoot": "projects/openapi-angular/src",
+      "sourceRoot": "projects/openapi-angular",
       "prefix": "lib",
       "architect": {
         "build": {
