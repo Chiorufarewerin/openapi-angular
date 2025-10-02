@@ -5,15 +5,10 @@ export type OpenapiResponse<
   T extends Record<string | number, unknown>,
   Options,
   Media extends MediaType,
-> = Options extends {
-  observe: 'response';
-}
-  ? HttpResponse<OpenapiResponseType<SuccessResponse<ResponseObjectMap<T>, Media>, Options>>
-  : Options extends {
-        observe: 'events';
-      }
-    ? HttpEvent<OpenapiResponseType<SuccessResponse<ResponseObjectMap<T>, Media>, Options>>
-    : OpenapiResponseType<SuccessResponse<ResponseObjectMap<T>, Media>, Options>;
+> = OpenapiResponseObserve<
+  OpenapiResponseType<SuccessResponse<ResponseObjectMap<T>, Media>, Options>,
+  Options
+>;
 
 export type OpenapiResponseType<T, Options> = Options extends {
   responseType: keyof OpenapiBodyType;
@@ -21,9 +16,21 @@ export type OpenapiResponseType<T, Options> = Options extends {
   ? OpenapiBodyType<T>[Options['responseType']]
   : T;
 
+export type OpenapiResponseObserve<T, Options> = Options extends {
+  observe: keyof OpenapiObserve;
+}
+  ? OpenapiObserve<T>[Options['observe']]
+  : T;
+
 export type OpenapiBodyType<T = unknown> = {
   json: T;
   text: string;
   arraybuffer: ArrayBuffer;
   blob: Blob;
+};
+
+export type OpenapiObserve<T = unknown> = {
+  body: T;
+  response: HttpResponse<T>;
+  events: HttpEvent<T>;
 };

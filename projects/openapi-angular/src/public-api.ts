@@ -17,7 +17,9 @@ export type {
 } from './lib/types/openapi-request';
 export type {
   OpenapiBodyType,
+  OpenapiObserve,
   OpenapiResponse,
+  OpenapiResponseObserve,
   OpenapiResponseType,
 } from './lib/types/openapi-response';
 export type {
