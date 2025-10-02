@@ -12,7 +12,8 @@
     "isolatedModules": true,
     "experimentalDecorators": true,
     "paths": {
-      "openapi-angular": ["./dist/openapi-angular"]
+      "openapi-angular": ["./dist/openapi-angular"],
+      "openapi-angular/resource": ["./dist/openapi-angular/resource"]
     },
     "importHelpers": true,
     "target": "ES2022",

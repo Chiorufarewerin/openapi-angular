@@ -8,5 +8,5 @@
     "declarationMap": true,
     "types": []
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "resource/**/*.ts"]
 }

@@ -39,15 +39,14 @@ export interface OpenapiDefaultParamsOption {
   };
 }
 
-export type OpenapiRequestCommonOptions<T> = {
+export interface OpenapiRequestCommonOptions<T> {
   baseUrl?: string;
   headers?: OpenapiHeadersOptions;
   querySerializer?: OpenapiQuerySerializer<T> | OpenapiQuerySerializerOptions;
   bodySerializer?: OpenapiBodySerializer<T>;
-};
+}
 
-export type OpenapiHttpRequestOptions = {
-  headers?: OpenapiHeadersOptions;
+export interface OpenapiHttpRequestOptions {
   context?: HttpContext;
   reportProgress?: boolean;
   withCredentials?: boolean;
@@ -63,4 +62,4 @@ export type OpenapiHttpRequestOptions = {
   timeout?: number;
   responseType?: 'json' | 'text' | 'arraybuffer' | 'blob';
   observe?: 'body' | 'response' | 'events';
-};
+}

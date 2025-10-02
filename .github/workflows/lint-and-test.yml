@@ -34,11 +34,11 @@ jobs:
       - name: ESLint
         run: npm run lint
 
-      - name: Test
-        run: npm run test
-
       - name: Build lib
         run: npm run build:lib
 
       - name: Build demo
         run: npm run build:demo
+
+      - name: Test
+        run: npm run test
