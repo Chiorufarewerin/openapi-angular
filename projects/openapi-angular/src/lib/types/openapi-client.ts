@@ -17,14 +17,14 @@ export interface OpenapiClient<
   Media extends MediaType = MediaType,
 > {
   request<
-    Method extends HttpMethod,
-    Path extends OpenapiPathsWithMethod<Paths, Method>,
-    Init extends OpenapiMaybeOptionalInit<Paths[Path], Method>,
+    Method extends Uppercase<HttpMethod>,
+    Path extends OpenapiPathsWithMethod<Paths, Lowercase<Method>>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], Lowercase<Method>>,
   >(
     method: Method,
     path: Path,
     ...init: OpenapiInitParam<Init>
-  ): Observable<OpenapiResponse<Paths[Path][Method], Init, Media>>;
+  ): Observable<OpenapiResponse<Paths[Path][Lowercase<Method>], Init, Media>>;
 
   get<
     Path extends OpenapiPathsWithMethod<Paths, 'get'>,

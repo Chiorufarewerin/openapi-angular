@@ -37,14 +37,14 @@ export class OpenapiClientImpl<
   ) {}
 
   request<
-    Method extends HttpMethod,
-    Path extends OpenapiPathsWithMethod<Paths, Method>,
-    Init extends OpenapiMaybeOptionalInit<Paths[Path], Method>,
+    Method extends Uppercase<HttpMethod>,
+    Path extends OpenapiPathsWithMethod<Paths, Lowercase<Method>>,
+    Init extends OpenapiMaybeOptionalInit<Paths[Path], Lowercase<Method>>,
   >(
     method: Method,
     path: Path,
     ...init: OpenapiInitParam<Init>
-  ): Observable<OpenapiResponse<Paths[Path][Method], Init, Media>> {
+  ): Observable<OpenapiResponse<Paths[Path][Lowercase<Method>], Init, Media>> {
     const {
       baseUrl: localBaseUrl,
       params = {},
@@ -64,8 +64,8 @@ export class OpenapiClientImpl<
     const finalHeaders = mergeHeaders(this.opts.headers, headers, params.header);
     const requestOptions = { body: serializedBody, headers: finalHeaders, ...restOptions };
 
-    return this.http.request<OpenapiResponse<Paths[Path][Method], Init, Media>>(
-      method.toUpperCase(),
+    return this.http.request<OpenapiResponse<Paths[Path][Lowercase<Method>], Init, Media>>(
+      method,
       url,
       requestOptions,
     );
@@ -78,7 +78,7 @@ export class OpenapiClientImpl<
     path: Path,
     ...init: OpenapiInitParam<Init>
   ): Observable<OpenapiResponse<Paths[Path]['get'], Init, Media>> {
-    return this.request('get', path, ...init);
+    return this.request('GET', path, ...init);
   }
 
   head<
@@ -88,7 +88,7 @@ export class OpenapiClientImpl<
     path: Path,
     ...init: OpenapiInitParam<Init>
   ): Observable<OpenapiResponse<Paths[Path]['head'], Init, Media>> {
-    return this.request('head', path, ...init);
+    return this.request('HEAD', path, ...init);
   }
 
   options<
@@ -98,7 +98,7 @@ export class OpenapiClientImpl<
     path: Path,
     ...init: OpenapiInitParam<Init>
   ): Observable<OpenapiResponse<Paths[Path]['options'], Init, Media>> {
-    return this.request('options', path, ...init);
+    return this.request('OPTIONS', path, ...init);
   }
 
   patch<
@@ -108,7 +108,7 @@ export class OpenapiClientImpl<
     path: Path,
     ...init: OpenapiInitParam<Init>
   ): Observable<OpenapiResponse<Paths[Path]['patch'], Init, Media>> {
-    return this.request('patch', path, ...init);
+    return this.request('PATCH', path, ...init);
   }
 
   post<
@@ -118,7 +118,7 @@ export class OpenapiClientImpl<
     path: Path,
     ...init: OpenapiInitParam<Init>
   ): Observable<OpenapiResponse<Paths[Path]['post'], Init, Media>> {
-    return this.request('post', path, ...init);
+    return this.request('POST', path, ...init);
   }
 
   put<
@@ -128,7 +128,7 @@ export class OpenapiClientImpl<
     path: Path,
     ...init: OpenapiInitParam<Init>
   ): Observable<OpenapiResponse<Paths[Path]['put'], Init, Media>> {
-    return this.request('put', path, ...init);
+    return this.request('PUT', path, ...init);
   }
 
   trace<
@@ -138,7 +138,7 @@ export class OpenapiClientImpl<
     path: Path,
     ...init: OpenapiInitParam<Init>
   ): Observable<OpenapiResponse<Paths[Path]['trace'], Init, Media>> {
-    return this.request('trace', path, ...init);
+    return this.request('TRACE', path, ...init);
   }
 
   delete<
@@ -148,6 +148,6 @@ export class OpenapiClientImpl<
     path: Path,
     ...init: OpenapiInitParam<Init>
   ): Observable<OpenapiResponse<Paths[Path]['delete'], Init, Media>> {
-    return this.request('delete', path, ...init);
+    return this.request('DELETE', path, ...init);
   }
 }
