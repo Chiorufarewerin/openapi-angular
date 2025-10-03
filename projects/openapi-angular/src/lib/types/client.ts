@@ -2,10 +2,10 @@ import type { Injector } from '@angular/core';
 import type { HttpMethod, MediaType } from 'openapi-typescript-helpers';
 import type { Observable } from 'rxjs';
 
-import type { OpenapiInitParam, OpenapiMaybeOptionalInit } from './openapi-init';
-import type { OpenapiPathsWithMethod } from './openapi-path';
-import type { OpenapiRequestCommonOptions } from './openapi-request';
-import type { OpenapiResponse } from './openapi-response';
+import type { OpenapiInitParam, OpenapiMaybeOptionalInit } from './init';
+import type { OpenapiPathsWithMethod } from './path';
+import type { OpenapiRequestCommonOptions } from './request';
+import type { OpenapiResponse } from './response';
 
 export interface OpenapiClientOptions extends OpenapiRequestCommonOptions<unknown> {
   /** Overrides the `Injector` */

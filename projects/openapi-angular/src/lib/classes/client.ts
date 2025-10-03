@@ -1,30 +1,16 @@
-import { HttpClient } from '@angular/common/http';
-import { assertInInjectionContext, inject, Injector } from '@angular/core';
+import type { HttpClient } from '@angular/common/http';
 import type { HttpMethod, MediaType } from 'openapi-typescript-helpers';
 import type { Observable } from 'rxjs';
 import { identity } from 'rxjs';
 
 import { combineQuerySerializers } from '../serializers/query';
 import { createFinalURL } from '../serializers/url';
-import type { OpenapiClient, OpenapiClientOptions } from '../types/openapi-client';
-import type { OpenapiInitParam, OpenapiMaybeOptionalInit } from '../types/openapi-init';
-import type { OpenapiPathsWithMethod } from '../types/openapi-path';
-import type { OpenapiResponse } from '../types/openapi-response';
+import type { OpenapiClient, OpenapiClientOptions } from '../types/client';
+import type { OpenapiInitParam, OpenapiMaybeOptionalInit } from '../types/init';
+import type { OpenapiPathsWithMethod } from '../types/path';
+import type { OpenapiResponse } from '../types/response';
 import { removeTrailingSlash } from '../utils/common';
 import { mergeHeaders } from '../utils/headers';
-
-export function openapiClient<Paths extends {}, Media extends MediaType = MediaType>(
-  options?: OpenapiClientOptions,
-): OpenapiClient<Paths, Media> {
-  if (ngDevMode && !options?.injector) {
-    assertInInjectionContext(openapiClient);
-  }
-
-  const injector = options?.injector ?? inject(Injector);
-  const http = injector.get(HttpClient);
-
-  return new OpenapiClientImpl<Paths, Media>(http, options);
-}
 
 export class OpenapiClientImpl<
   Paths extends Record<string, Record<HttpMethod, {}>>,

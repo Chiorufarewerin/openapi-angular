@@ -2,10 +2,10 @@
  * Public API Surface of openapi-angular
  */
 
-export { openapiClient } from './lib/classes/openapi-client';
-export type { OpenapiClient, OpenapiClientOptions } from './lib/types/openapi-client';
-export type { OpenapiInitParam, OpenapiMaybeOptionalInit } from './lib/types/openapi-init';
-export type { OpenapiPathsWithMethod } from './lib/types/openapi-path';
+export { openapiClient } from './lib/factory';
+export type { OpenapiClient, OpenapiClientOptions } from './lib/types/client';
+export type { OpenapiInitParam, OpenapiMaybeOptionalInit } from './lib/types/init';
+export type { OpenapiPathsWithMethod } from './lib/types/path';
 export type {
   OpenapiDefaultParamsOption,
   OpenapiHttpRequestOptions,
@@ -14,16 +14,16 @@ export type {
   OpenapiRequestBodyOption,
   OpenapiRequestCommonOptions,
   OpenapiRequestOptions,
-} from './lib/types/openapi-request';
+} from './lib/types/request';
 export type {
   OpenapiBodyType,
   OpenapiObserve,
   OpenapiResponse,
   OpenapiResponseObserve,
   OpenapiResponseType,
-} from './lib/types/openapi-response';
+} from './lib/types/response';
 export type {
   OpenapiBodySerializer,
   OpenapiQuerySerializer,
   OpenapiQuerySerializerOptions,
-} from './lib/types/openapi-serializer';
+} from './lib/types/serializer';

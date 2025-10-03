@@ -1,6 +1,6 @@
 import type { FilterKeys, RequiredKeysOf } from 'openapi-typescript-helpers';
 
-import type { OpenapiRequest } from './openapi-request';
+import type { OpenapiRequest } from './request';
 
 export type OpenapiMaybeOptionalInit<Params, Location extends keyof Params> =
   RequiredKeysOf<OpenapiRequest<FilterKeys<Params, Location>>> extends never

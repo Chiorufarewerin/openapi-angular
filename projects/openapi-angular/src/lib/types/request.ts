@@ -5,12 +5,12 @@ import type {
   RequiredKeysOf,
 } from 'openapi-typescript-helpers';
 
-import type { OpenapiHeadersOptions } from './openapi-header';
+import type { OpenapiHeadersOptions } from './header';
 import type {
   OpenapiBodySerializer,
   OpenapiQuerySerializer,
   OpenapiQuerySerializerOptions,
-} from './openapi-serializer';
+} from './serializer';
 
 export type OpenapiRequest<T> = OpenapiRequestOptions<T> & OpenapiHttpRequestOptions;
 

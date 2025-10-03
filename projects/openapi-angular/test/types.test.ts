@@ -1,10 +1,14 @@
+import type { HttpRequest } from '@angular/common/http';
+import type { OpenapiBodyType } from 'openapi-angular';
 import type {
   ErrorResponse,
   GetResponseContent,
   OkStatus,
   SuccessResponse,
 } from 'openapi-typescript-helpers';
-import { assertType, describe, test } from 'vitest';
+import { assertType, describe, expectTypeOf, test } from 'vitest';
+
+import type { OpenapiHttpRequestOptions, OpenapiObserve } from '../public-api';
 
 describe('types', () => {
   describe('GetResponseContent', () => {
@@ -284,5 +288,15 @@ describe('types', () => {
       assertType<Response>({ error: '500 application/json' });
       assertType<Response>({ error: 'default application/json' });
     });
+  });
+
+  test('OpenapiBodyType and OpenapiObserve contains keys from OpenapiHttpRequestOptions and HttpRequest', () => {
+    type ResponseType = Exclude<OpenapiHttpRequestOptions['responseType'], undefined>;
+    type Observe = Exclude<OpenapiHttpRequestOptions['observe'], undefined>;
+
+    expectTypeOf<keyof OpenapiBodyType>().toEqualTypeOf<ResponseType>();
+    expectTypeOf<keyof OpenapiObserve>().toEqualTypeOf<Observe>();
+
+    expectTypeOf<HttpRequest<unknown>['responseType']>().toEqualTypeOf<ResponseType>();
   });
 });

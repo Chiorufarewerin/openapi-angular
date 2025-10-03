@@ -1,7 +1,4 @@
-import type {
-  OpenapiQuerySerializer,
-  OpenapiQuerySerializerOptions,
-} from '../types/openapi-serializer';
+import type { OpenapiQuerySerializer, OpenapiQuerySerializerOptions } from '../types/serializer';
 import { isRecord } from '../utils/common';
 import { serializeArrayParam, serializeObjectParam, serializePrimitiveParam } from './common';
 
