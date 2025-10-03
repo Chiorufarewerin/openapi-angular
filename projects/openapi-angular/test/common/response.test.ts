@@ -5,30 +5,30 @@ import { assertType, describe, expect, expectTypeOf, test } from 'vitest';
 import { firstEntryFrom, openapiTestingClient } from '../testing.js';
 import type { components, paths } from './schemas/common.js';
 
-type Resource = components['schemas']['Resource'];
+type Entity = components['schemas']['Entity'];
 
 describe('response', () => {
   describe('data/error', () => {
     test('valid path', async () => {
       using client = openapiTestingClient<paths>();
 
-      const result = await firstEntryFrom(client.get('/resources'));
+      const result = await firstEntryFrom(client.get('/entities'));
 
       // 1. assert data & error may be undefined initially
-      assertType<Resource[] | undefined>(result.data);
+      assertType<Entity[] | undefined>(result.data);
       // BEHAVIOR CHANGED errors are untyped
       // assertType<Error | undefined>(result.error);
 
       // 2. assert data is not undefined inside condition block
       if (result.data) {
-        assertType<NonNullable<Resource[]>>(result.data);
+        assertType<NonNullable<Entity[]>>(result.data);
         assertType<undefined>(result.error);
       }
 
       // BEHAVIOR CHANGED errors are untyped
       // 2b. inverse should work, too
       // if (!result.error) {
-      //   assertType<NonNullable<Resource[]>>(result.data);
+      //   assertType<NonNullable<Entity[]>>(result.data);
       //   assertType<undefined>(result.error);
       // }
 
@@ -67,7 +67,7 @@ describe('response', () => {
       using client = openapiTestingClient<paths>();
       const result = await firstEntryFrom(client.get('/mismatched-response'));
       if (result.data) {
-        expectTypeOf(result.data).toEqualTypeOf<Resource | Resource[]>();
+        expectTypeOf(result.data).toEqualTypeOf<Entity | Entity[]>();
       } else {
         // BEHAVIOR CHANGED errors are untyped
         // expectTypeOf(result.error)
@@ -81,7 +81,7 @@ describe('response', () => {
       using client = openapiTestingClient<paths>();
       const result = await firstEntryFrom(client.get('/mismatched-errors'));
       if (result.data) {
-        expectTypeOf(result.data).toEqualTypeOf<Resource>();
+        expectTypeOf(result.data).toEqualTypeOf<Entity>();
       } else {
         expectTypeOf(result.data).toBeUndefined();
         // BEHAVIOR CHANGED errors are untyped
@@ -99,12 +99,12 @@ describe('response', () => {
       // is good. But these do not test runtime.
       test('application/json', async () => {
         const { data } = await firstEntryFrom(client.get('/media-json'));
-        assertType<Resource[] | undefined>(data);
+        assertType<Entity[] | undefined>(data);
       });
 
       test('application/vnd.api+json', async () => {
         const { data } = await firstEntryFrom(client.get('/media-vnd-json'));
-        assertType<Resource[] | undefined>(data);
+        assertType<Entity[] | undefined>(data);
       });
 
       test('text/html', async () => {
@@ -152,7 +152,7 @@ describe('response', () => {
 
       try {
         const response = await firstValueFrom(
-          client.get(status === 200 ? '/resources' : `/error-${status}`, { observe: 'response' }),
+          client.get(status === 200 ? '/entities' : `/error-${status}`, { observe: 'response' }),
         );
         expect(response.status).toBe(status);
         expect(response.status).toBe(200);
@@ -170,7 +170,7 @@ describe('response', () => {
       using client = openapiTestingClient<paths>({}, () => ({ body: 'hello' }));
 
       const data = (await firstValueFrom(
-        client.get('/resources', {
+        client.get('/entities', {
           responseType: 'text',
         }),
       )) satisfies string;
@@ -184,7 +184,7 @@ describe('response', () => {
       }));
 
       const data = (await firstValueFrom(
-        client.get('/resources', {
+        client.get('/entities', {
           responseType: 'arraybuffer',
         }),
       )) satisfies ArrayBuffer;
@@ -196,7 +196,7 @@ describe('response', () => {
       using client = openapiTestingClient<paths>({}, () => ({ body: new Blob([]) }));
 
       const data = (await firstValueFrom(
-        client.get('/resources', {
+        client.get('/entities', {
           responseType: 'blob',
         }),
       )) satisfies Blob;

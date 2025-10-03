@@ -8,11 +8,11 @@ import { getHeadersIterator } from '../../src/lib/utils/headers.js';
 import { openapiTestingClient } from '../testing.js';
 import type { components, paths } from './schemas/common.js';
 
-type Resource = components['schemas']['Resource'];
+type Entity = components['schemas']['Entity'];
 
-const resource1: Resource = { id: 123 };
-const resource2: Resource = { id: 456 };
-const resource3: Resource = { id: 789 };
+const entity1: Entity = { id: 123 };
+const entity2: Entity = { id: 456 };
+const entity3: Entity = { id: 789 };
 
 function headersToObj(
   headers: Headers | Record<string, string> | HttpHeaders,
@@ -31,9 +31,9 @@ describe('request', () => {
       let headers!: HttpHeaders;
       using client = openapiTestingClient<paths>({ headers: { foo: 'bar' } }, (req) => {
         headers = req.headers;
-        return { body: [resource1, resource2, resource3] };
+        return { body: [entity1, entity2, entity3] };
       });
-      await firstValueFrom(client.get('/resources'));
+      await firstValueFrom(client.get('/entities'));
       expect(headersToObj(headers)).toEqual({
         foo: 'bar',
       });
@@ -52,11 +52,11 @@ describe('request', () => {
         },
         (req) => {
           headers = req.headers;
-          return { body: [resource1, resource2, resource3] };
+          return { body: [entity1, entity2, entity3] };
         },
       );
       await firstValueFrom(
-        client.get('/resources', {
+        client.get('/entities', {
           headers: {
             foo: '',
             bar: 0,
@@ -77,9 +77,9 @@ describe('request', () => {
       let headers!: HttpHeaders;
       using client = openapiTestingClient<paths>({ headers: { foo: 'bar', bar: 'baz' } }, (req) => {
         headers = req.headers;
-        return { body: [resource1, resource2, resource3] };
+        return { body: [entity1, entity2, entity3] };
       });
-      await firstValueFrom(client.get('/resources', { headers: { foo: null } }));
+      await firstValueFrom(client.get('/entities', { headers: { foo: null } }));
       expect(headersToObj(headers)).toEqual({
         // "foo" removed!
         bar: 'baz',
@@ -90,10 +90,10 @@ describe('request', () => {
       let headers!: HttpHeaders;
       using client = openapiTestingClient<paths>({ headers }, (req) => {
         headers = req.headers;
-        return { body: [resource1, resource2, resource3] };
+        return { body: [entity1, entity2, entity3] };
       });
       await firstValueFrom(
-        client.get('/resources', {
+        client.get('/entities', {
           headers: {
             foo: 'bar',
             bar: 123,
@@ -112,12 +112,12 @@ describe('request', () => {
       let headers!: HttpHeaders;
       using client = openapiTestingClient<paths>({}, (req) => {
         headers = req.headers;
-        return { body: [resource1, resource2, resource3] };
+        return { body: [entity1, entity2, entity3] };
       });
 
       const list = ['one', 'two', 'three'];
 
-      await firstValueFrom(client.get('/resources', { headers: { list } }));
+      await firstValueFrom(client.get('/entities', { headers: { list } }));
 
       expect(headers.get('list')).toEqual(list.join(', '));
     });
@@ -342,7 +342,7 @@ describe('request', () => {
       return { body: {} };
     });
     await firstValueFrom(
-      client.get('/resources', {
+      client.get('/entities', {
         credentials: 'include',
         headers: {
           Cookie: 'session=1234',

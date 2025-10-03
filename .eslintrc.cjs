@@ -48,7 +48,7 @@ module.exports = {
       },
     },
     {
-      files: ['**/*.spec.ts', '**/*.test.ts', '**/test/testing.ts'],
+      files: ['**/*.spec.ts', '**/*.test.ts', '**/test/**/testing.ts'],
       rules: {
         '@typescript-eslint/ban-ts-comment': 'off',
         '@typescript-eslint/no-explicit-any': 'off',

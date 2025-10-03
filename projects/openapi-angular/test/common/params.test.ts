@@ -5,18 +5,18 @@ import type { OpenapiQuerySerializerOptions } from '../../public-api.js';
 import { openapiTestingClient } from '../testing.js';
 import type { components, paths } from './schemas/common.js';
 
-type Resource = components['schemas']['Resource'];
+type Entity = components['schemas']['Entity'];
 
-const resource1: Resource = { id: 123 };
-const resource2: Resource = { id: 456 };
-const resource3: Resource = { id: 789 };
+const entity1: Entity = { id: 123 };
+const entity2: Entity = { id: 456 };
+const entity3: Entity = { id: 789 };
 
 describe('params', () => {
   describe('path', () => {
     test('typechecks', async () => {
       using client = openapiTestingClient<paths>({}, (req) => {
-        const found = [resource1, resource2, resource3].find(
-          (post) => String(post.id) === req.url.split('/resources/')[1],
+        const found = [entity1, entity2, entity3].find(
+          (post) => String(post.id) === req.url.split('/entities/')[1],
         );
         return found ? { body: found } : { body: { code: 404, message: 'Not found' }, status: 404 };
       });
@@ -26,7 +26,7 @@ describe('params', () => {
         firstValueFrom(
           client
             // @ts-expect-error
-            .get('/resources/{id}'),
+            .get('/entities/{id}'),
         ),
       ).rejects.toThrowError();
 
@@ -35,14 +35,14 @@ describe('params', () => {
         firstValueFrom(
           client
             // @ts-expect-error
-            .get('/resources/{id}', {}),
+            .get('/entities/{id}', {}),
         ),
       ).rejects.toThrowError();
 
       // assert missing path params throws error
       await expect(
         firstValueFrom(
-          client.get('/resources/{id}', {
+          client.get('/entities/{id}', {
             // @ts-expect-error
             params: {},
           }),
@@ -52,7 +52,7 @@ describe('params', () => {
       // assert empty paths object throws error
       await expect(
         firstValueFrom(
-          client.get('/resources/{id}', {
+          client.get('/entities/{id}', {
             params: {
               // @ts-expect-error
               path: {},
@@ -63,7 +63,7 @@ describe('params', () => {
 
       // assert right name, mismatched type throws error
       await firstValueFrom(
-        client.get('/resources/{id}', {
+        client.get('/entities/{id}', {
           params: {
             path: {
               // @ts-expect-error
@@ -75,19 +75,19 @@ describe('params', () => {
 
       // assert right name, right type passes
       const result = await firstValueFrom(
-        client.get('/resources/{id}', { params: { path: { id: 456 } } }),
+        client.get('/entities/{id}', { params: { path: { id: 456 } } }),
       );
-      expect(result).toEqual(resource2);
+      expect(result).toEqual(entity2);
     });
 
     test('typechecks (empty path params)', async () => {
       using client = openapiTestingClient<paths>({}, () => ({
-        body: [resource1, resource2, resource3],
+        body: [entity1, entity2, entity3],
       }));
 
       // assert unneeded path params throws type error
       await firstValueFrom(
-        client.get('/resources', {
+        client.get('/entities', {
           params: {
             // @ts-expect-error
             path: { id: 123 },
@@ -97,7 +97,7 @@ describe('params', () => {
 
       // assert even empty objects throw type error
       await firstValueFrom(
-        client.get('/resources', {
+        client.get('/entities', {
           params: {
             // @ts-expect-error
             path: {},
@@ -105,12 +105,12 @@ describe('params', () => {
         }),
       );
 
-      const data = await firstValueFrom(client.get('/resources'));
+      const data = await firstValueFrom(client.get('/entities'));
 
       // assert data matches expected type
       if (data) {
-        assertType<Resource[]>(data);
-        expect(data).toEqual([resource1, resource2, resource3]); // also test runtime, too
+        assertType<Entity[]>(data);
+        expect(data).toEqual([entity1, entity2, entity3]); // also test runtime, too
       } else {
         // note: even though this is not a reachable code path, type tests still work!
         assertType<undefined>(data);
@@ -548,7 +548,7 @@ describe('params', () => {
           );
 
           await firstValueFrom(
-            client.get('/resources/{id}', {
+            client.get('/entities/{id}', {
               params: {
                 path: { id: 123 },
                 query: { version: 2, format: 'json' },
@@ -557,7 +557,7 @@ describe('params', () => {
           );
 
           expect(`${actualURL.pathname}${actualURL.search}`).toBe(
-            '/resources/123?alpha=2&beta=json',
+            '/entities/123?alpha=2&beta=json',
           );
         });
 
@@ -574,7 +574,7 @@ describe('params', () => {
           );
 
           await firstValueFrom(
-            client.get('/resources/{id}', {
+            client.get('/entities/{id}', {
               params: {
                 path: { id: 456 },
                 query: { version: 2, format: 'json' },
@@ -584,7 +584,7 @@ describe('params', () => {
           );
 
           expect(`${actualURL.pathname}${actualURL.search}`).toBe(
-            '/resources/456?alpha=2&beta=json',
+            '/entities/456?alpha=2&beta=json',
           );
         });
       });
@@ -601,14 +601,14 @@ describe('params', () => {
           },
         );
         await firstValueFrom(
-          client.get('/resources/{id}', {
+          client.get('/entities/{id}', {
             params: {
               path: { id: 789 },
               query: { version: 2, format: 'json' },
             },
           }),
         );
-        expect(`${actualURL.pathname}${actualURL.search}`).toBe('/resources/789?query');
+        expect(`${actualURL.pathname}${actualURL.search}`).toBe('/entities/789?query');
       });
     });
   });

@@ -14,7 +14,7 @@ import { firstValueFrom, of, throwError } from 'rxjs';
 import type { OpenapiClient, OpenapiClientOptions } from '../public-api';
 import { openapiClient } from '../public-api';
 
-type ResponseData<T> = {
+type OpenapiTestingResponseData<T> = {
   body?: T | null;
   headers?: HttpHeaders;
   status?: number;
@@ -22,15 +22,17 @@ type ResponseData<T> = {
   url?: string;
   redirected?: boolean;
 };
-type OnRequestFn = (input: HttpRequest<unknown>) => ResponseData<unknown>;
+export type OpenapiTestingOnRequestFn = (
+  input: HttpRequest<unknown>,
+) => OpenapiTestingResponseData<unknown> | void;
 
-const OPENAPI_ON_REQUEST = new InjectionToken<OnRequestFn>('OPENAPI_ON_REQUEST');
+const OPENAPI_ON_REQUEST = new InjectionToken<OpenapiTestingOnRequestFn>('OPENAPI_ON_REQUEST');
 
 class OpenapiProxyBackend implements HttpBackend {
   private readonly onRequest = inject(OPENAPI_ON_REQUEST);
 
   handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-    const { body, ...rest } = this.onRequest(req);
+    const { body, ...rest } = this.onRequest(req) ?? {};
     // ok determines whether the response will be transmitted on the event or error channel.
     const ok = !rest.status || (rest.status >= 200 && rest.status < 300);
 
@@ -42,8 +44,8 @@ class OpenapiProxyBackend implements HttpBackend {
 
 export function openapiTestingClient<Paths extends {}, Media extends MediaType = MediaType>(
   options?: OpenapiClientOptions,
-  onRequest: OnRequestFn = () => ({}),
-): OpenapiClient<Paths, Media> & { [Symbol.dispose]: () => void } {
+  onRequest: OpenapiTestingOnRequestFn = () => ({}),
+): OpenapiClient<Paths, Media> & { [Symbol.dispose]: () => void; _options_: OpenapiClientOptions } {
   TestBed.configureTestingModule({
     providers: [
       provideZonelessChangeDetection(),
@@ -53,15 +55,19 @@ export function openapiTestingClient<Paths extends {}, Media extends MediaType =
     ],
   });
 
-  const client = openapiClient<Paths, Media>({
+  options = {
     ...options,
     baseUrl: options?.baseUrl || 'https://fake-api.example',
     injector: options?.injector || TestBed.inject(Injector),
-  });
+  };
+
+  const client = openapiClient<Paths, Media>(options);
 
   (client as any)[Symbol.dispose] = () => {
     TestBed.resetTestingModule();
   };
+
+  (client as any)._options_ = options;
 
   return client as any;
 }

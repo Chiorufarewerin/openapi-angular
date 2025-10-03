@@ -1,6 +1,3 @@
-export type {
-  OpenapiResourceOptions,
-  OpenapiResourceRef,
-  OpenapiResourceRequest,
-} from './lib/types/options';
-export type { OpenapiResourceFactory, OpenapiResourceFn } from './lib/types/resource';
+export { openapiResourceFactory } from './lib/factory';
+export type { OpenapiResourceOptions } from './lib/types/options';
+export type { OpenapiResourceFn } from './lib/types/resource';

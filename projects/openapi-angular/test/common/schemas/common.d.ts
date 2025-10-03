@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-  '/resources': {
+  '/entities': {
     parameters: {
       query?: never;
       header?: never;
@@ -26,7 +26,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/json': components['schemas']['ResourceList'];
+            'application/json': components['schemas']['EntityList'];
           };
         };
         /** @description Internal Server Error */
@@ -48,7 +48,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/resources/{id}': {
+  '/entities/{id}': {
     parameters: {
       query?: {
         version?: number;
@@ -80,7 +80,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/json': components['schemas']['Resource'];
+            'application/json': components['schemas']['Entity'];
           };
         };
         /** @description Not Found */
@@ -124,7 +124,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/json': components['schemas']['ResourceList'];
+            'application/json': components['schemas']['EntityList'];
           };
         };
         /** @description Not Found */
@@ -168,7 +168,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/json': components['schemas']['ResourceList'];
+            'application/json': components['schemas']['EntityList'];
           };
         };
         /** @description Internal server error */
@@ -212,7 +212,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/json': components['schemas']['ResourceList'];
+            'application/json': components['schemas']['EntityList'];
           };
         };
         /** @description Unexpected error */
@@ -256,7 +256,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/json': components['schemas']['ResourceList'];
+            'application/json': components['schemas']['EntityList'];
           };
         };
       };
@@ -291,7 +291,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/vnd.api+json': components['schemas']['ResourceList'];
+            'application/vnd.api+json': components['schemas']['EntityList'];
           };
         };
       };
@@ -405,7 +405,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/json': components['schemas']['Resource'];
+            'application/json': components['schemas']['Entity'];
           };
         };
         /** @description Created */
@@ -414,7 +414,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/json': components['schemas']['ResourceList'];
+            'application/json': components['schemas']['EntityList'];
           };
         };
         /** @description Unexpected error */
@@ -458,7 +458,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            'application/json': components['schemas']['Resource'];
+            'application/json': components['schemas']['Entity'];
           };
         };
         /** @description Not Found */
@@ -735,10 +735,10 @@ export interface components {
       code: number;
       message: string;
     };
-    Resource: {
+    Entity: {
       id: number;
     };
-    ResourceList: components['schemas']['Resource'][];
+    EntityList: components['schemas']['Entity'][];
   };
   responses: never;
   parameters: never;

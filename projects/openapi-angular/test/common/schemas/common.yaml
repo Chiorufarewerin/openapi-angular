@@ -3,23 +3,23 @@ info:
   title: openapi-fetch
   version: '1.0'
 paths:
-  /resources:
+  /entities:
     get:
       responses:
         200:
           description: OK
-          operationId: getResources
+          operationId: getEntities
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResourceList'
+                $ref: '#/components/schemas/EntityList'
         500:
           description: Internal Server Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /resources/{id}:
+  /entities/{id}:
     parameters:
       - name: id
         in: path
@@ -38,11 +38,11 @@ paths:
       responses:
         200:
           description: OK
-          operationId: getResource
+          operationId: getEntity
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Resource'
+                $ref: '#/components/schemas/Entity'
         404:
           description: Not Found
           content:
@@ -57,7 +57,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResourceList'
+                $ref: '#/components/schemas/EntityList'
         404:
           description: Not Found
           content:
@@ -72,7 +72,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResourceList'
+                $ref: '#/components/schemas/EntityList'
         500:
           description: Internal server error
           content:
@@ -87,7 +87,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResourceList'
+                $ref: '#/components/schemas/EntityList'
         default:
           description: Unexpected error
           content:
@@ -102,7 +102,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResourceList'
+                $ref: '#/components/schemas/EntityList'
   /media-vnd-json:
     get:
       responses:
@@ -111,7 +111,7 @@ paths:
           content:
             application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/ResourceList'
+                $ref: '#/components/schemas/EntityList'
   /media-text:
     get:
       responses:
@@ -162,13 +162,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Resource'
+                $ref: '#/components/schemas/Entity'
         201:
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResourceList'
+                $ref: '#/components/schemas/EntityList'
         default:
           description: Unexpected error
           content:
@@ -183,7 +183,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Resource'
+                $ref: '#/components/schemas/Entity'
         404:
           description: Not Found
           content: {}
@@ -433,14 +433,14 @@ components:
           type: integer
         message:
           type: string
-    Resource:
+    Entity:
       type: object
       required:
         - id
       properties:
         id:
           type: integer
-    ResourceList:
+    EntityList:
       type: array
       items:
-        $ref: '#/components/schemas/Resource'
+        $ref: '#/components/schemas/Entity'

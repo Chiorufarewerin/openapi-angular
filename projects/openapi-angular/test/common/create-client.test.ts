@@ -13,8 +13,8 @@ describe('createClient options', () => {
       actualURL = new URL(req.url);
       return { body: [] };
     });
-    await firstValueFrom(client.get('/resources'));
-    expect(actualURL.href).toBe('https://api.foo.bar/v2/resources');
+    await firstValueFrom(client.get('/entities'));
+    expect(actualURL.href).toBe('https://api.foo.bar/v2/entities');
   });
 
   test('baseUrl removes trailing slash', async () => {
@@ -23,8 +23,8 @@ describe('createClient options', () => {
       actualURL = new URL(req.url);
       return { body: [] };
     });
-    await firstValueFrom(client.get('/resources'));
-    expect(actualURL.href).toBe('https://api.foo.bar/v3/resources');
+    await firstValueFrom(client.get('/entities'));
+    expect(actualURL.href).toBe('https://api.foo.bar/v3/entities');
   });
 
   test('baseUrl per request', async () => {
@@ -35,10 +35,10 @@ describe('createClient options', () => {
     });
 
     const localBaseUrl = 'https://api.foo.bar/v3';
-    await firstValueFrom(client.get('/resources', { baseUrl: localBaseUrl }));
+    await firstValueFrom(client.get('/entities', { baseUrl: localBaseUrl }));
 
     // assert baseUrl and path mesh as expected
-    expect(actualURL.href).toBe('https://api.foo.bar/v3/resources');
+    expect(actualURL.href).toBe('https://api.foo.bar/v3/entities');
   });
 
   test('baseUrl per request causes no override on default baseUrl', async () => {
@@ -49,15 +49,15 @@ describe('createClient options', () => {
     });
 
     const localBaseUrl = 'https://api.foo.bar/v3';
-    await firstValueFrom(client.get('/resources', { baseUrl: localBaseUrl }));
+    await firstValueFrom(client.get('/entities', { baseUrl: localBaseUrl }));
 
     // assert baseUrl and path mesh as expected
-    expect(actualURL.href).toBe('https://api.foo.bar/v3/resources');
+    expect(actualURL.href).toBe('https://api.foo.bar/v3/entities');
 
-    await firstValueFrom(client.get('/resources'));
+    await firstValueFrom(client.get('/entities'));
 
     // assert baseUrl and path mesh as expected
-    expect(actualURL.href).toBe('https://api.foo.bar/v2/resources');
+    expect(actualURL.href).toBe('https://api.foo.bar/v2/entities');
   });
 
   describe('content-type', () => {
@@ -74,7 +74,7 @@ describe('createClient options', () => {
         headers = req.headers;
         return { body: [] };
       });
-      await firstValueFrom(client[options.method]('/resources', options.fetchOptions as any));
+      await firstValueFrom(client[options.method]('/entities', options.fetchOptions as any));
       return headers.get('content-type');
     }
 
