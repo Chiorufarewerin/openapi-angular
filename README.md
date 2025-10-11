@@ -64,6 +64,10 @@ npm install openapi-angular
    }
    ```
 
+## Reactive API (Signals)
+
+**[openapiResource](./README.openapiResource.md)**.
+
 ## How it differs from `HttpClient`
 
 1. **Path-based URLs:** Use OpenAPI paths instead of hardcoded URLs.

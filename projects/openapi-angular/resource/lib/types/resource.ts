@@ -4,8 +4,14 @@ import type { MethodFor } from './method';
 import type { OpenapiResourceOptions } from './options';
 import type { PathFor } from './path';
 import type { OpenapiResourceRef } from './ref';
-import type { RequestFor, ResponseFor } from './util';
+import type { RequestFor } from './request';
+import type { ResponseFor } from './response';
 
+/**
+ * Type for the `OpenapiResource` top-level function, which includes the call signatures for the JSON-
+ * based `OpenapiRequest` as well as sub-functions for `ArrayBuffer`, `Blob`, and `string` type
+ * requests.
+ */
 export interface OpenapiResourceFn<
   Paths extends Record<string, Record<HttpMethod, {}>>,
   Media extends MediaType = MediaType,

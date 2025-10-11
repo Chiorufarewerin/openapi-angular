@@ -11,7 +11,7 @@
     "lint:fix": "eslint . --ext .ts,.html --fix",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "build:lib": "ng build openapi-angular --configuration production && cp README.md dist/openapi-angular && cp LICENSE dist/openapi-angular",
+    "build:lib": "ng build openapi-angular --configuration production && cp README.md dist/openapi-angular && cp README.openapiResource.md dist/openapi-angular && cp LICENSE dist/openapi-angular",
     "publish:lib": "npm run build:lib && npm publish ./dist/openapi-angular"
   },
   "private": true,

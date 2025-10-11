@@ -4,14 +4,16 @@ import type { HttpMethod } from 'openapi-typescript-helpers';
 import type { EffectiveMethod, MethodFor } from './method';
 
 /**
- * @internal
  * Symbol is used for determine whether user define path. It only referse as a type for internal purpose only.
+ *
+ * @internal
  */
 export declare const __OPENAPI_RESOURCE_PATH__: unique symbol;
 
 /**
- * @internal
  * Returns all available paths for method
+ *
+ * @internal
  */
 export type PathFor<
   Paths extends Record<string, Record<HttpMethod, {}>>,
@@ -25,10 +27,11 @@ export type PathFor<
   | typeof __OPENAPI_RESOURCE_PATH__;
 
 /**
- * @internal
  * Checks whether is defined path
  * - if not (every path with __OPENAPI_RESOURCE_PATH__), then returns never
  * - otherwise Path
+ *
+ * @internal
  */
 export type EffectivePath<
   Paths extends Record<string, Record<HttpMethod, {}>>,

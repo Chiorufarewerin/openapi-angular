@@ -8,8 +8,7 @@ import type { MethodFor } from './types/method';
 import type { OpenapiResourceOptions } from './types/options';
 import type { PathFor } from './types/path';
 import type { OpenapiResourceRef } from './types/ref';
-import type { ResourceRequest, ResourceResponseType } from './types/request';
-import type { RequestFor } from './types/util';
+import type { RequestFor, ResourceRequest, ResourceResponseType } from './types/request';
 
 export function makeOpenapiResourceFn<Paths extends Record<string, Record<HttpMethod, {}>>>(
   responseType: ResourceResponseType,

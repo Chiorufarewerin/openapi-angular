@@ -1,14 +1,16 @@
 import type { HttpMethod } from 'openapi-typescript-helpers';
 
 /**
- * @internal
  * Symbol is used for determine whether user define method or not. It only referse as a type for internal purpose only.
+ *
+ * @internal
  */
 export declare const __OPENAPI_RESOURCE_METHOD__: unique symbol;
 
 /**
- * @internal
  * Returns all available methods in paths
+ *
+ * @internal
  */
 export type MethodFor<Paths extends Record<string, Record<HttpMethod, {}>>> =
   | keyof {
@@ -20,10 +22,11 @@ export type MethodFor<Paths extends Record<string, Record<HttpMethod, {}>>> =
   | undefined;
 
 /**
- * @internal
  * Checks whether is defined method
  * - if not (every method with __OPENAPI_RESOURCE_METHOD__) nor explicity undefined, then returns `get`
  * - otherwise Method
+ *
+ * @internal
  */
 export type EffectiveMethod<
   Paths extends Record<string, Record<HttpMethod, {}>>,

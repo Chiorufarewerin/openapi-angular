@@ -17,6 +17,8 @@ import type { OpenapiResourceRef } from '../types/ref';
 import type { ResourceRequest } from '../types/request';
 
 /**
+ * Similar to HttpResourceImpl, but adapted for OpenapiClient
+ *
  * @internal
  */
 export class OpenapiResourceImpl<T>
