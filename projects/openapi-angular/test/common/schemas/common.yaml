@@ -421,6 +421,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /posts:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+              required:
+                - status
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   schemas:
     Error:
@@ -444,3 +467,10 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Entity'
+    Post:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status

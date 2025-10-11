@@ -1,18 +1,18 @@
 import type { OpenapiRequest } from 'openapi-angular';
 import type { HttpMethod } from 'openapi-typescript-helpers';
 
-import type { ResponseType } from './util';
+import type { Default, ResponseType } from './util';
 
-export interface OpenapiResourceRequest<Method extends Uppercase<HttpMethod> | undefined>
+export interface OpenapiResourceRequest<Method extends HttpMethod | undefined>
   extends Omit<OpenapiRequest<unknown>, 'observe' | 'responseType'> {
-  method?: [Method] extends [string] ? Method : never;
+  method?: Uppercase<Default<Method, 'get'>>;
   url: string;
 }
 
 /**
  * @internal
  */
-export interface ResourceRequest extends OpenapiResourceRequest<Uppercase<HttpMethod>> {
+export interface ResourceRequest extends OpenapiResourceRequest<HttpMethod> {
   method: Uppercase<HttpMethod>;
   responseType: ResponseType;
   observe: 'events';

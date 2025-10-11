@@ -727,6 +727,54 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/posts': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: {
+        content: {
+          'application/json': {
+            status: string;
+          };
+        };
+      };
+      responses: {
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['Post'];
+          };
+        };
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['Error'];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -739,6 +787,9 @@ export interface components {
       id: number;
     };
     EntityList: components['schemas']['Entity'][];
+    Post: {
+      status: string;
+    };
   };
   responses: never;
   parameters: never;
