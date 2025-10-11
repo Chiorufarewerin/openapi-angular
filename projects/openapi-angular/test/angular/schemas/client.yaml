@@ -50,7 +50,6 @@ paths:
           content:
             application/json:
               schema: {}
-
     delete:
       requestBody:
         required: false
@@ -61,6 +60,53 @@ paths:
               properties:
                 data:
                   type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: {}
+  /data:
+    parameters:
+      - name: fast
+        in: query
+        required: false
+        schema:
+          type: string
+    get:
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: {}
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              anyOf:
+                - type: object
+                  properties:
+                    message:
+                      type: string
+                  required:
+                    - message
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: {}
+  /data/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: number
+    get:
       responses:
         200:
           description: OK
