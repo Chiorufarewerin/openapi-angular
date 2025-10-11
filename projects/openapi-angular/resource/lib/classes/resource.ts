@@ -73,7 +73,7 @@ export class OpenapiResourceImpl<T>
           resolve = undefined;
         };
 
-        sub = this.client.request(method ?? 'GET', url, init).subscribe({
+        sub = this.client.request(method, url, init).subscribe({
           next: (event) => {
             switch (event.type) {
               case HttpEventType.Response:

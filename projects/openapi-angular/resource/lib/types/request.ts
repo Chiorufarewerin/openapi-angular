@@ -3,7 +3,7 @@ import type { HttpMethod } from 'openapi-typescript-helpers';
 
 export type OpenapiResourceRequest<T> = Omit<OpenapiRequest<T>, 'observe' | 'responseType'> & {
   method?: Uppercase<HttpMethod> | undefined;
-  url: string;
+  url?: string;
 };
 
 /**
@@ -14,8 +14,9 @@ export type ResourceResponseType = Extract<OpenapiHttpRequestOptions['responseTy
 /**
  * @internal
  */
-export interface ResourceRequest extends OpenapiResourceRequest<unknown> {
+export type ResourceRequest = OpenapiResourceRequest<any> & {
   method: Uppercase<HttpMethod>;
+  url: string;
   responseType: ResourceResponseType;
   observe: 'events';
-}
+};

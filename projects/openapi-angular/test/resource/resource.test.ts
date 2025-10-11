@@ -53,6 +53,9 @@ describe('resource', () => {
       return { body };
     });
 
+    // @ts-expect-error
+    resource(() => '/entities/{id}');
+
     const ref = resource(() => '/entities');
 
     expect(ref.value()).toBe(undefined);
@@ -300,6 +303,26 @@ describe('resource', () => {
     expectTypeOf(val).toEqualTypeOf<Entity[]>();
   });
 
+  test('request with params', async () => {
+    const body: Entity = { id: 123 };
+    using resource = openapiTestingResource<paths>({}, (req: HttpRequest<unknown>) => {
+      request = req;
+      return { body };
+    });
+
+    const ref = resource(() => ({ url: '/entities/{id}', params: { path: { id: 123 } } }));
+
+    await resource.whenStable();
+
+    expect(ref.error()).toBe(undefined);
+
+    const val = ref.value();
+
+    expect(request.method).toBe('GET');
+    expect(request.url).toBe('https://fake-api.example/entities/123');
+    expectTypeOf(val).toEqualTypeOf<Entity | undefined>();
+  });
+
   test('request with method', async () => {
     const body: Post = { status: 'draft' };
     using resource = openapiTestingResource<paths>({}, (req: HttpRequest<unknown>) => {
@@ -313,8 +336,13 @@ describe('resource', () => {
     // @ts-expect-error
     resource(() => ({ method: 'POST', url: '/entities' }));
 
-    // TODO: check body
-    const ref = resource(() => ({ method: 'POST', url: '/posts' }));
+    // @ts-expect-error
+    resource(() => ({ method: 'POST', url: '/posts' }));
+
+    // @ts-expect-error
+    resource(() => ({ method: 'POST', url: '/posts', body: {} }));
+
+    const ref = resource(() => ({ method: 'POST', url: '/posts', body: { status: 'draft' } }));
 
     await resource.whenStable();
 
@@ -348,7 +376,6 @@ describe('resource', () => {
     const value = signal(true);
 
     const ref = resource(() =>
-      // @ts-expect-error
       value() ? { method: 'POST', url: '/posts' } : { method: 'GET', url: '/entities' },
     );
 

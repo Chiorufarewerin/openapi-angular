@@ -1,200 +1,198 @@
 import type { HttpMethod, MediaType } from 'openapi-typescript-helpers';
 
+import type { MethodFor } from './method';
 import type { OpenapiResourceOptions } from './options';
+import type { PathFor } from './path';
 import type { OpenapiResourceRef } from './ref';
-import type { PathFor, RequestFor, ResourceHttpMethod, ResponseFor } from './util';
+import type { RequestFor, ResponseFor } from './util';
 
 export interface OpenapiResourceFn<
   Paths extends Record<string, Record<HttpMethod, {}>>,
   Media extends MediaType = MediaType,
 > {
   <
+    Method extends MethodFor<Paths>,
     Path extends PathFor<Paths, Method>,
-    Request extends RequestFor<Paths, Path, Method>,
-    Response extends ResponseFor<Paths, Path, Method, Media, Request>,
-    Method extends ResourceHttpMethod<Paths> = ResourceHttpMethod<Paths>,
-    TResult = Response,
+    Resp = ResponseFor<Paths, Method, Path, Media, RequestFor<Paths, Method, Path>>,
+    TResult = Resp,
   >(
-    url: () => (Request & { method?: Method; url: Path }) | Path,
-    options: OpenapiResourceOptions<TResult, Response> & { defaultValue: NoInfer<TResult> },
+    request: () => RequestFor<Paths, Method, Path>,
+    options: OpenapiResourceOptions<TResult, Resp> & { defaultValue: NoInfer<TResult> },
   ): OpenapiResourceRef<TResult>;
 
   <
+    Method extends MethodFor<Paths>,
     Path extends PathFor<Paths, Method>,
-    Request extends RequestFor<Paths, Path, Method>,
-    Response extends ResponseFor<Paths, Path, Method, Media, Request>,
-    Method extends ResourceHttpMethod<Paths> = ResourceHttpMethod<Paths>,
-    TResult = Response,
+    Resp = ResponseFor<Paths, Method, Path, Media, RequestFor<Paths, Method, Path>>,
+    TResult = Resp,
   >(
-    url: () => (Request & { method?: Method; url: Path }) | Path,
-    options?: OpenapiResourceOptions<TResult, Response>,
+    request: () => RequestFor<Paths, Method, Path>,
+    options?: OpenapiResourceOptions<TResult, Resp>,
   ): OpenapiResourceRef<TResult | undefined>;
 
-  (
-    url: () => undefined,
-    options?: OpenapiResourceOptions<undefined, undefined>,
+  <Resp = undefined, TResult = undefined>(
+    request: () => undefined,
+    options?: OpenapiResourceOptions<TResult, Resp>,
   ): OpenapiResourceRef<undefined>;
 
   <
+    Method extends MethodFor<Paths>,
     Path extends PathFor<Paths, Method>,
-    Request extends RequestFor<Paths, Path, Method>,
-    Response extends ResponseFor<Paths, Path, Method, Media, Request>,
-    Method extends ResourceHttpMethod<Paths> = ResourceHttpMethod<Paths>,
-    TResult = Response,
+    Resp = ResponseFor<Paths, Method, Path, Media, RequestFor<Paths, Method, Path>>,
+    TResult = Resp,
   >(
-    url: () => (Request & { method?: Method; url: Path }) | Path | undefined,
-    options: OpenapiResourceOptions<TResult, Response> & { defaultValue: NoInfer<TResult> },
+    request: () => RequestFor<Paths, Method, Path> | undefined,
+    options: OpenapiResourceOptions<TResult, Resp> & { defaultValue: NoInfer<TResult> },
   ): OpenapiResourceRef<TResult>;
 
   <
+    Method extends MethodFor<Paths>,
     Path extends PathFor<Paths, Method>,
-    Request extends RequestFor<Paths, Path, Method>,
-    Response extends ResponseFor<Paths, Path, Method, Media, Request>,
-    Method extends ResourceHttpMethod<Paths> = ResourceHttpMethod<Paths>,
-    TResult = Response,
+    Resp = ResponseFor<Paths, Method, Path, Media, RequestFor<Paths, Method, Path>>,
+    TResult = Resp,
   >(
-    url: () => (Request & { method?: Method; url: Path }) | Path | undefined,
-    options?: OpenapiResourceOptions<TResult, Response>,
+    request: () => RequestFor<Paths, Method, Path> | undefined,
+    options?: OpenapiResourceOptions<TResult, Resp>,
   ): OpenapiResourceRef<TResult | undefined>;
 
   arrayBuffer: {
     <
+      Method extends MethodFor<Paths>,
       Path extends PathFor<Paths, Method>,
-      Request extends RequestFor<Paths, Path, Method>,
-      Method extends ResourceHttpMethod<Paths> = ResourceHttpMethod<Paths>,
-      TResult = ArrayBuffer,
+      Resp = ArrayBuffer,
+      TResult = Resp,
     >(
-      url: () => (Request & { method?: Method; url: Path }) | Path,
-      options: OpenapiResourceOptions<TResult, ArrayBuffer> & { defaultValue: NoInfer<TResult> },
+      request: () => RequestFor<Paths, Method, Path>,
+      options: OpenapiResourceOptions<TResult, Resp> & { defaultValue: NoInfer<TResult> },
     ): OpenapiResourceRef<TResult>;
 
     <
+      Method extends MethodFor<Paths>,
       Path extends PathFor<Paths, Method>,
-      Request extends RequestFor<Paths, Path, Method>,
-      Method extends ResourceHttpMethod<Paths> = ResourceHttpMethod<Paths>,
-      TResult = ArrayBuffer,
+      Resp = ArrayBuffer,
+      TResult = Resp,
     >(
-      url: () => (Request & { method?: Method; url: Path }) | Path,
-      options?: OpenapiResourceOptions<TResult, ArrayBuffer>,
+      request: () => RequestFor<Paths, Method, Path>,
+      options?: OpenapiResourceOptions<TResult, Resp>,
     ): OpenapiResourceRef<TResult | undefined>;
 
-    (
-      url: () => undefined,
-      options?: OpenapiResourceOptions<undefined, ArrayBuffer>,
+    <Resp = ArrayBuffer, TResult = undefined>(
+      request: () => undefined,
+      options?: OpenapiResourceOptions<TResult, Resp>,
     ): OpenapiResourceRef<undefined>;
 
     <
+      Method extends MethodFor<Paths>,
       Path extends PathFor<Paths, Method>,
-      Request extends RequestFor<Paths, Path, Method>,
-      Method extends ResourceHttpMethod<Paths> = ResourceHttpMethod<Paths>,
-      TResult = ArrayBuffer,
+      Resp = ArrayBuffer,
+      TResult = Resp,
     >(
-      url: () => (Request & { method?: Method; url: Path }) | Path | undefined,
-      options: OpenapiResourceOptions<TResult, ArrayBuffer> & { defaultValue: NoInfer<TResult> },
+      request: () => RequestFor<Paths, Method, Path> | undefined,
+      options: OpenapiResourceOptions<TResult, Resp> & { defaultValue: NoInfer<TResult> },
     ): OpenapiResourceRef<TResult>;
 
     <
+      Method extends MethodFor<Paths>,
       Path extends PathFor<Paths, Method>,
-      Request extends RequestFor<Paths, Path, Method>,
-      Method extends ResourceHttpMethod<Paths> = ResourceHttpMethod<Paths>,
-      TResult = ArrayBuffer,
+      Resp = ArrayBuffer,
+      TResult = Resp,
     >(
-      url: () => (Request & { method?: Method; url: Path }) | Path | undefined,
-      options?: OpenapiResourceOptions<TResult, ArrayBuffer>,
+      request: () => RequestFor<Paths, Method, Path> | undefined,
+      options?: OpenapiResourceOptions<TResult, Resp>,
     ): OpenapiResourceRef<TResult | undefined>;
   };
 
   blob: {
     <
+      Method extends MethodFor<Paths>,
       Path extends PathFor<Paths, Method>,
-      Request extends RequestFor<Paths, Path, Method>,
-      Method extends ResourceHttpMethod<Paths> = ResourceHttpMethod<Paths>,
-      TResult = Blob,
+      Resp = Blob,
+      TResult = Resp,
     >(
-      url: () => (Request & { method?: Method; url: Path }) | Path,
-      options: OpenapiResourceOptions<TResult, Blob> & { defaultValue: NoInfer<TResult> },
+      request: () => RequestFor<Paths, Method, Path>,
+      options: OpenapiResourceOptions<TResult, Resp> & { defaultValue: NoInfer<TResult> },
     ): OpenapiResourceRef<TResult>;
 
     <
+      Method extends MethodFor<Paths>,
       Path extends PathFor<Paths, Method>,
-      Request extends RequestFor<Paths, Path, Method>,
-      Method extends ResourceHttpMethod<Paths> = ResourceHttpMethod<Paths>,
-      TResult = Blob,
+      Resp = Blob,
+      TResult = Resp,
     >(
-      url: () => (Request & { method?: Method; url: Path }) | Path,
-      options?: OpenapiResourceOptions<TResult, Blob>,
+      request: () => RequestFor<Paths, Method, Path>,
+      options?: OpenapiResourceOptions<TResult, Resp>,
     ): OpenapiResourceRef<TResult | undefined>;
 
-    (
-      url: () => undefined,
-      options?: OpenapiResourceOptions<undefined, Blob>,
+    <Resp = Blob, TResult = undefined>(
+      request: () => undefined,
+      options?: OpenapiResourceOptions<TResult, Resp>,
     ): OpenapiResourceRef<undefined>;
 
     <
+      Method extends MethodFor<Paths>,
       Path extends PathFor<Paths, Method>,
-      Request extends RequestFor<Paths, Path, Method>,
-      Method extends ResourceHttpMethod<Paths> = ResourceHttpMethod<Paths>,
-      TResult = Blob,
+      Resp = Blob,
+      TResult = Resp,
     >(
-      url: () => (Request & { method?: Method; url: Path }) | Path | undefined,
-      options: OpenapiResourceOptions<TResult, Blob> & { defaultValue: NoInfer<TResult> },
+      request: () => RequestFor<Paths, Method, Path> | undefined,
+      options: OpenapiResourceOptions<TResult, Resp> & { defaultValue: NoInfer<TResult> },
     ): OpenapiResourceRef<TResult>;
 
     <
+      Method extends MethodFor<Paths>,
       Path extends PathFor<Paths, Method>,
-      Request extends RequestFor<Paths, Path, Method>,
-      Method extends ResourceHttpMethod<Paths> = ResourceHttpMethod<Paths>,
-      TResult = Blob,
+      Resp = Blob,
+      TResult = Resp,
     >(
-      url: () => (Request & { method?: Method; url: Path }) | Path | undefined,
-      options?: OpenapiResourceOptions<TResult, Blob>,
+      request: () => RequestFor<Paths, Method, Path> | undefined,
+      options?: OpenapiResourceOptions<TResult, Resp>,
     ): OpenapiResourceRef<TResult | undefined>;
   };
 
   text: {
     <
+      Method extends MethodFor<Paths>,
       Path extends PathFor<Paths, Method>,
-      Request extends RequestFor<Paths, Path, Method>,
-      Method extends ResourceHttpMethod<Paths> = ResourceHttpMethod<Paths>,
-      TResult = string,
+      Resp = string,
+      TResult = Resp,
     >(
-      url: () => (Request & { method?: Method; url: Path }) | Path,
-      options: OpenapiResourceOptions<TResult, string> & { defaultValue: NoInfer<TResult> },
+      request: () => RequestFor<Paths, Method, Path>,
+      options: OpenapiResourceOptions<TResult, Resp> & { defaultValue: NoInfer<TResult> },
     ): OpenapiResourceRef<TResult>;
 
     <
+      Method extends MethodFor<Paths>,
       Path extends PathFor<Paths, Method>,
-      Request extends RequestFor<Paths, Path, Method>,
-      Method extends ResourceHttpMethod<Paths> = ResourceHttpMethod<Paths>,
-      TResult = string,
+      Resp = string,
+      TResult = Resp,
     >(
-      url: () => (Request & { method?: Method; url: Path }) | Path,
-      options?: OpenapiResourceOptions<TResult, string>,
+      request: () => RequestFor<Paths, Method, Path>,
+      options?: OpenapiResourceOptions<TResult, Resp>,
     ): OpenapiResourceRef<TResult | undefined>;
 
-    (
-      url: () => undefined,
-      options?: OpenapiResourceOptions<undefined, string>,
+    <Resp = string, TResult = undefined>(
+      request: () => undefined,
+      options?: OpenapiResourceOptions<TResult, Resp>,
     ): OpenapiResourceRef<undefined>;
 
     <
+      Method extends MethodFor<Paths>,
       Path extends PathFor<Paths, Method>,
-      Request extends RequestFor<Paths, Path, Method>,
-      Method extends ResourceHttpMethod<Paths> = ResourceHttpMethod<Paths>,
-      TResult = string,
+      Resp = string,
+      TResult = Resp,
     >(
-      url: () => (Request & { method?: Method; url: Path }) | Path | undefined,
-      options: OpenapiResourceOptions<TResult, string> & { defaultValue: NoInfer<TResult> },
+      request: () => RequestFor<Paths, Method, Path> | undefined,
+      options: OpenapiResourceOptions<TResult, Resp> & { defaultValue: NoInfer<TResult> },
     ): OpenapiResourceRef<TResult>;
 
     <
+      Method extends MethodFor<Paths>,
       Path extends PathFor<Paths, Method>,
-      Request extends RequestFor<Paths, Path, Method>,
-      Method extends ResourceHttpMethod<Paths> = ResourceHttpMethod<Paths>,
-      TResult = string,
+      Resp = string,
+      TResult = Resp,
     >(
-      url: () => (Request & { method?: Method; url: Path }) | Path | undefined,
-      options?: OpenapiResourceOptions<TResult, string>,
+      request: () => RequestFor<Paths, Method, Path> | undefined,
+      options?: OpenapiResourceOptions<TResult, Resp>,
     ): OpenapiResourceRef<TResult | undefined>;
   };
 }

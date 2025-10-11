@@ -1,69 +1,54 @@
-import type { OpenapiPathsWithMethod, OpenapiResponse } from 'openapi-angular';
-import type { FilterKeys, HttpMethod, MediaType } from 'openapi-typescript-helpers';
+import type { OpenapiResponse } from 'openapi-angular';
+import type { FilterKeys, HttpMethod, MediaType, RequiredKeysOf } from 'openapi-typescript-helpers';
 
+import type { EffectiveMethod, MethodFor } from './method';
+import type { EffectivePath, PathFor } from './path';
 import type { OpenapiResourceRequest } from './request';
-
-/**
- * @internal
- * Symbol is used for determine whether user define method or not. It only referse as a type.
- * Without method it has to be get
- */
-export declare const __RESOURCE_HTTP_METHOD__: unique symbol;
-
-/**
- * @internal
- */
-export type ResourceHttpMethod<Paths extends Record<string, Record<HttpMethod, {}>>> =
-  | keyof {
-      [Method in HttpMethod as Paths[keyof Paths][Method] extends undefined
-        ? never
-        : Uppercase<Method>]: Paths[keyof Paths][Method];
-    }
-  | typeof __RESOURCE_HTTP_METHOD__
-  | undefined;
-
-/**
- * @internal
- */
-export type EffectiveMethod<
-  Paths extends Record<string, Record<HttpMethod, {}>>,
-  Method extends ResourceHttpMethod<Paths>,
-> = [ResourceHttpMethod<Paths>] extends [Method]
-  ? 'get'
-  : Method extends undefined
-    ? 'get'
-    : Method extends Uppercase<HttpMethod>
-      ? Lowercase<Method>
-      : never;
-
-/**
- * @internal
- */
-export type PathFor<
-  Paths extends Record<string, Record<HttpMethod, {}>>,
-  Method extends ResourceHttpMethod<Paths>,
-> = {
-  [M in HttpMethod]: M extends EffectiveMethod<Paths, Method>
-    ? OpenapiPathsWithMethod<Paths, M>
-    : never;
-}[HttpMethod];
 
 /**
  * @internal
  */
 export type RequestFor<
   Paths extends Record<string, Record<HttpMethod, {}>>,
-  Path extends string,
-  Method extends ResourceHttpMethod<Paths>,
-> = OpenapiResourceRequest<FilterKeys<Paths[Path], EffectiveMethod<Paths, Method>>>;
+  Method extends MethodFor<Paths>,
+  Path extends PathFor<Paths, Method>,
+> =
+  | (OpenapiResourceRequest<
+      FilterKeys<Paths[EffectivePath<Paths, Method, Path>], EffectiveMethod<Paths, Method>>
+    > & {
+      method?: Method;
+      url: Path;
+    })
+  | {
+      [Pathname in keyof Paths]: Paths[Pathname] extends {
+        [K in EffectiveMethod<Paths, Method>]: any;
+      }
+        ? Pathname extends Path
+          ? RequiredKeysOf<
+              OpenapiResourceRequest<
+                FilterKeys<
+                  Paths[EffectivePath<Paths, Method, Pathname>],
+                  EffectiveMethod<Paths, Method>
+                >
+              >
+            > extends never
+            ? Pathname
+            : never
+          : never
+        : never;
+    }[keyof Paths];
 
 /**
  * @internal
  */
 export type ResponseFor<
   Paths extends Record<string, Record<HttpMethod, {}>>,
-  Path extends string,
-  Method extends ResourceHttpMethod<Paths>,
+  Method extends MethodFor<Paths>,
+  Path extends PathFor<Paths, Method>,
   Media extends MediaType,
   Request,
-> = OpenapiResponse<Paths[Path][EffectiveMethod<Paths, Method>], Request, Media>;
+> = OpenapiResponse<
+  Paths[EffectivePath<Paths, Method, Path>][EffectiveMethod<Paths, Method>],
+  Request,
+  Media
+>;
