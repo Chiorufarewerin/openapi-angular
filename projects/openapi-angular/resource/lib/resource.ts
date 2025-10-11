@@ -1,35 +1,30 @@
 import type { ValueEqualityFn } from '@angular/core';
 import { assertInInjectionContext, inject, Injector } from '@angular/core';
-import type {
-  OpenapiClientOptions,
-  OpenapiPathsWithMethod,
-  OpenapiRequest,
-  OpenapiResponse,
-} from 'openapi-angular';
-import type { FilterKeys, HttpMethod, MediaType } from 'openapi-typescript-helpers';
+import type { OpenapiClientOptions } from 'openapi-angular';
+import type { HttpMethod, MediaType } from 'openapi-typescript-helpers';
 
 import { OpenapiResourceImpl } from './classes/resource';
 import type { OpenapiResourceOptions } from './types/options';
 import type { OpenapiResourceRef } from './types/ref';
-import type { OpenapiResourceRequest, ResourceRequest } from './types/request';
-import type { Default, ResponseType } from './types/util';
+import type {
+  OpenapiResourceRequest,
+  ResourceRequest,
+  ResourceResponseType,
+} from './types/request';
+import type { PathFor, RequestFor, ResourceHttpMethod, ResponseFor } from './types/util';
 
 export function makeOpenapiResourceFn<
   Paths extends Record<string, Record<HttpMethod, {}>>,
   Media extends MediaType = MediaType,
->(responseType: ResponseType, openapiOptions: OpenapiClientOptions | undefined) {
+>(responseType: ResourceResponseType, openapiOptions: OpenapiClientOptions | undefined) {
   return function openapiResource<
-    Method extends Uppercase<HttpMethod> | undefined,
-    Path extends OpenapiPathsWithMethod<Paths, Lowercase<Default<Method, 'GET'>>>,
-    Request extends OpenapiRequest<FilterKeys<Paths[Path], Lowercase<Default<Method, 'GET'>>>>,
-    Response extends OpenapiResponse<
-      Paths[Path][Lowercase<Default<Method, 'GET'>>],
-      Request,
-      Media
-    >,
+    Method extends ResourceHttpMethod<Paths>,
+    Path extends PathFor<Paths, Method>,
+    Request extends RequestFor<Paths, Path, Method>,
+    Response extends ResponseFor<Paths, Path, Method, Media, Request>,
     TResult = Response,
   >(
-    request: (() => Path | undefined) | (() => OpenapiResourceRequest<Method> | undefined),
+    request: () => (Request & { method?: Method; url: Path }) | Path | undefined,
     options?: OpenapiResourceOptions<TResult, Response>,
   ): OpenapiResourceRef<TResult | undefined> {
     if (ngDevMode && !options?.injector && !openapiOptions?.injector) {
@@ -49,11 +44,11 @@ export function makeOpenapiResourceFn<
 
 function normalizeRequest(
   request:
-    | (() => OpenapiResourceRequest<Uppercase<HttpMethod> | undefined> | string | undefined)
-    | OpenapiResourceRequest<Uppercase<HttpMethod> | undefined>
+    | (() => OpenapiResourceRequest<any> | string | undefined)
+    | OpenapiResourceRequest<any>
     | string
     | undefined,
-  responseType: ResponseType,
+  responseType: ResourceResponseType,
 ): ResourceRequest | undefined {
   const unwrappedRequest = typeof request === 'function' ? request() : request;
   if (unwrappedRequest === undefined) {

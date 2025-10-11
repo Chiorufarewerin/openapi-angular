@@ -8,8 +8,8 @@ export function openapiResourceFactory<Paths extends {}, Media extends MediaType
   options?: OpenapiClientOptions,
 ): OpenapiResourceFn<Paths, Media> {
   const jsonFn = makeOpenapiResourceFn('json', options) as OpenapiResourceFn<Paths, Media>;
-  // jsonFn.arrayBuffer = makeOpenapiResourceFn('arraybuffer', options);
-  // jsonFn.blob = makeOpenapiResourceFn('blob', options);
-  // jsonFn.text = makeOpenapiResourceFn('text', options);
+  jsonFn.arrayBuffer = makeOpenapiResourceFn('arraybuffer', options);
+  jsonFn.blob = makeOpenapiResourceFn('blob', options);
+  jsonFn.text = makeOpenapiResourceFn('text', options);
   return jsonFn;
 }

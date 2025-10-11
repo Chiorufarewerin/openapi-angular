@@ -1,18 +1,30 @@
-import type { OpenapiPathsWithMethod, OpenapiRequest, OpenapiResponse } from 'openapi-angular';
+import type { OpenapiPathsWithMethod, OpenapiResponse } from 'openapi-angular';
 import type { FilterKeys, HttpMethod, MediaType } from 'openapi-typescript-helpers';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-declare const __HTTP_METHOD__: unique symbol;
+import type { OpenapiResourceRequest } from './request';
 
+/**
+ * @internal
+ * Symbol is used for determine whether user define method or not. It only referse as a type.
+ * Without method it has to be get
+ */
+export declare const __RESOURCE_HTTP_METHOD__: unique symbol;
+
+/**
+ * @internal
+ */
 export type ResourceHttpMethod<Paths extends Record<string, Record<HttpMethod, {}>>> =
   | keyof {
       [Method in HttpMethod as Paths[keyof Paths][Method] extends undefined
         ? never
         : Uppercase<Method>]: Paths[keyof Paths][Method];
     }
-  | typeof __HTTP_METHOD__
+  | typeof __RESOURCE_HTTP_METHOD__
   | undefined;
 
+/**
+ * @internal
+ */
 export type EffectiveMethod<
   Paths extends Record<string, Record<HttpMethod, {}>>,
   Method extends ResourceHttpMethod<Paths>,
@@ -24,6 +36,9 @@ export type EffectiveMethod<
       ? Lowercase<Method>
       : never;
 
+/**
+ * @internal
+ */
 export type PathFor<
   Paths extends Record<string, Record<HttpMethod, {}>>,
   Method extends ResourceHttpMethod<Paths>,
@@ -33,28 +48,22 @@ export type PathFor<
     : never;
 }[HttpMethod];
 
+/**
+ * @internal
+ */
 export type RequestFor<
   Paths extends Record<string, Record<HttpMethod, {}>>,
   Path extends string,
   Method extends ResourceHttpMethod<Paths>,
-> = {
-  [M in HttpMethod]: M extends EffectiveMethod<Paths, Method>
-    ? {
-        [P in keyof Paths]: P extends Path ? OpenapiRequest<FilterKeys<Paths[P], M>> : never;
-      }[keyof Paths]
-    : never;
-}[HttpMethod];
+> = OpenapiResourceRequest<FilterKeys<Paths[Path], EffectiveMethod<Paths, Method>>>;
 
+/**
+ * @internal
+ */
 export type ResponseFor<
   Paths extends Record<string, Record<HttpMethod, {}>>,
   Path extends string,
   Method extends ResourceHttpMethod<Paths>,
   Media extends MediaType,
   Request,
-> = {
-  [M in HttpMethod]: M extends EffectiveMethod<Paths, Method>
-    ? {
-        [P in keyof Paths]: P extends Path ? OpenapiResponse<Paths[P][M], Request, Media> : never;
-      }[keyof Paths]
-    : never;
-}[HttpMethod];
+> = OpenapiResponse<Paths[Path][EffectiveMethod<Paths, Method>], Request, Media>;

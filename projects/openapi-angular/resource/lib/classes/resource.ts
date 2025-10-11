@@ -16,6 +16,9 @@ import type { Subscription } from 'rxjs';
 import type { OpenapiResourceRef } from '../types/ref';
 import type { ResourceRequest } from '../types/request';
 
+/**
+ * @internal
+ */
 export class OpenapiResourceImpl<T>
   extends ResourceImpl<T, ResourceRequest | undefined>
   implements OpenapiResourceRef<T>
