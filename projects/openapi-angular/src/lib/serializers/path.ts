@@ -3,6 +3,10 @@ import { serializeArrayParam, serializeObjectParam, serializePrimitiveParam } fr
 const PATH_PARAM_RE = /\{[^{}]+\}/g;
 
 type Style = 'simple' | 'label' | 'matrix';
+
+/**
+ * @internal
+ */
 export function defaultPathSerializer(
   pathname: string,
   pathParams: Record<string, unknown>,

@@ -1,5 +1,8 @@
 import { isRecord } from '../utils/common';
 
+/**
+ * @internal
+ */
 export function serializeObjectParam(
   name: string,
   value: unknown,
@@ -49,6 +52,9 @@ export function serializeObjectParam(
   return options.style === 'label' || options.style === 'matrix' ? `${joiner}${final}` : final;
 }
 
+/**
+ * @internal
+ */
 export function serializeArrayParam(
   name: string,
   value: unknown[],
@@ -101,6 +107,9 @@ export function serializeArrayParam(
     : values.join(joiner);
 }
 
+/**
+ * @internal
+ */
 export function serializePrimitiveParam(
   name: string,
   value: unknown,
@@ -117,6 +126,9 @@ export function serializePrimitiveParam(
   return `${name}=${options?.allowReserved === true ? value : encodeURIComponent(value as any)}`;
 }
 
+/**
+ * @internal
+ */
 export function getParamJoiner(explode: boolean, style: string): string {
   if (explode === false) {
     switch (style) {

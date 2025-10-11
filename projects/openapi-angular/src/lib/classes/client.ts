@@ -12,6 +12,9 @@ import type { OpenapiResponse } from '../types/response';
 import { removeTrailingSlash } from '../utils/common';
 import { mergeHeaders } from '../utils/headers';
 
+/**
+ * @internal
+ */
 export class OpenapiClientImpl<
   Paths extends Record<string, Record<HttpMethod, {}>>,
   Media extends MediaType = MediaType,

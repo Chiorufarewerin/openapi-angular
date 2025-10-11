@@ -2,6 +2,9 @@ import type { OpenapiQuerySerializer, OpenapiQuerySerializerOptions } from '../t
 import { isRecord } from '../utils/common';
 import { serializeArrayParam, serializeObjectParam, serializePrimitiveParam } from './common';
 
+/**
+ * @internal
+ */
 export function createQuerySerializer(
   options?: OpenapiQuerySerializerOptions,
 ): OpenapiQuerySerializer<unknown> {
@@ -47,6 +50,9 @@ export function createQuerySerializer(
   };
 }
 
+/**
+ * @internal
+ */
 export function combineQuerySerializers<T>(
   globalQuerySerializer?: OpenapiQuerySerializer<T> | OpenapiQuerySerializerOptions,
   requestQuerySerializer?: OpenapiQuerySerializer<T> | OpenapiQuerySerializerOptions,

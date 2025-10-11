@@ -2,6 +2,9 @@ import { HttpHeaders } from '@angular/common/http';
 
 import type { OpenapiHeadersOptions } from '../types/header';
 
+/**
+ * @internal
+ */
 export function mergeHeaders(...allHeaders: (OpenapiHeadersOptions | undefined)[]): HttpHeaders {
   const finalHeaders = new Headers();
   for (const h of allHeaders) {
@@ -23,6 +26,9 @@ export function mergeHeaders(...allHeaders: (OpenapiHeadersOptions | undefined)[
   return new HttpHeaders(finalHeaders);
 }
 
+/**
+ * @internal
+ */
 export function getHeadersIterator(
   headers: OpenapiHeadersOptions,
 ): Iterable<[string, string | string[] | boolean | number | null | undefined]> {

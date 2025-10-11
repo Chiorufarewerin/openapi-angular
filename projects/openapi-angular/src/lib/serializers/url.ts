@@ -1,6 +1,9 @@
 import type { OpenapiQuerySerializer } from '../types/serializer';
 import { defaultPathSerializer } from './path';
 
+/**
+ * @internal
+ */
 export function createFinalURL<O>(
   pathname: string,
   options: {
